@@ -19,6 +19,21 @@ Preferrably have the video segments you want to annotate with stats ready. Do no
 
 Instead, cut your video into segment by game to comment on, and then identify the location of the data areas for player 1 and 2 in `(x, y, width, height)` tuples, and populate them the script.
 
+```python
+p1_line_count_xywh = (818, 58, 101, 31)
+p1_score_xywh = (572, 59, 206, 32)
+p1_level_xywh = (577, 168, 57, 28)
+
+p2_line_count_xywh = (1260, 58, 100, 32)
+p2_score_xywh = (1016, 61, 205, 32)
+p2_level_xywh = (1022, 171, 56, 27)
+```
+
+This can be easily found in any graphic editor like gimp, like below:
+
+![Find capture area](./finding_capture_area.jpg)
+
+
 Then run the script with
 ```
 python3 generate.py FILEPATH_TO_VIDEO_FILE
@@ -26,11 +41,11 @@ python3 generate.py FILEPATH_TO_VIDEO_FILE
 
 # Sample output
 
-![sample frame](./sample_frame.jpg)
+![Sample frame](./sample_frame.jpg)
 
 ## Aknowledgment
 
-Reading the line count from the TreyVision footage is done using the file `digitocr.py` from the excellent [NESTrisOCR](https://github.com/alex-ong/NESTrisOCR) project by [Alex Ong](https://github.com/alex-ong).
+OCR-ing the score, lines, level count from the CTM footage is done using the file `digitocr.py` from the excellent [NESTrisOCR](https://github.com/alex-ong/NESTrisOCR) project by [Alex Ong](https://github.com/alex-ong).
 
 
 ## Related Project
