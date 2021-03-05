@@ -43,14 +43,21 @@ print("Generating Stats from file\n%s\ninto output file\n%s" % (
 	output_file
 ))
 
+total_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+base_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+base_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
 out = cv2.VideoWriter(
 	output_file,
 	cv2.VideoWriter_fourcc(*'mp4v'),
 	23.976,
-	(1920, 1080)
+	(
+		base_width,
+		base_height
+	)
 )
 
-total_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+composite_color = (255, 0, 255, 0)
 
 
 def drawTextWithBorder(draw, text, loc, color, font):
@@ -88,9 +95,11 @@ def drawStats(frame):
 		tetris_diff = Player.getTetrisDiff(player1, player2)
 
 		pace_diff = abs(player1.pace_score - player2.pace_score)
-		pace_tetris_diff = 0 # can I use the same formula as for tetris_diff 🤔
-	except:
-		print(player1.score, player2.score)
+		pace_tetris_diff = Player.getTetrisDiff(player1, player2, use_pace_score=True)
+	except Exception as err:
+		print('exception', player1.score, player2.score)
+		print(err)
+		print("")
 		return
 
 	p1 = {}
@@ -155,7 +164,7 @@ def drawStats(frame):
 		}
 
 
-	# Draw Player 2 first (easier)
+	# Draw Player 2 first (easier because left aligned)
 	x, y = player2.stats_xy
 
 	drawTextWithBorder(draw
@@ -221,7 +230,7 @@ def drawStats(frame):
 	)
 
 
-	## and then player 1
+	## and then player 1... right aligned T_T
 
 	x, y = player1.stats_xy
 	w, h = draw.textsize(p1["score"]["score"], font_big)
@@ -257,11 +266,53 @@ def drawStats(frame):
 		, font
 	)
 
-	frame = cv2.cvtColor(numpy.array(frame), cv2.COLOR_RGB2BGR)
-	out.write(frame);
+	cur_y += h + spacing
+
+	w, h = draw.textsize("Pace", font)
+	cur_x = x - w
+
+	drawTextWithBorder(draw
+		, "Pace"
+		, (cur_x, cur_y)
+		, white
+		, font
+	)
+
+	w, h = draw.textsize(p1["pace"]["score"], font)
+	cur_x -= (w + spacing)
+
+	drawTextWithBorder(draw
+		, p1["pace"]["score"]
+		, (cur_x, cur_y)
+		, p1["pace"]["color"]
+		, font
+	)
+
+	cur_y += h + spacing
+
+	w, h = draw.textsize("Tetrises", font)
+	cur_x = x - w
+
+	drawTextWithBorder(draw
+		, "Tetrises"
+		, (cur_x, cur_y)
+		, white
+		, font
+	)
+
+	w, h = draw.textsize(p1["pace"]["tetrises"], font)
+	cur_x -= (w + spacing)
+
+	drawTextWithBorder(draw
+		, p1["pace"]["tetrises"]
+		, (cur_x, cur_y)
+		, p1["pace"]["color"]
+		, font
+	)
 
 
 frame_idx = -1
+last_stats_frame = None
 
 while True:
 	cv2_retval, cv2_image = cap.read()
@@ -274,10 +325,19 @@ while True:
 	cv2_image = cv2.cvtColor(cv2_image, cv2.COLOR_BGR2RGB)
 	frame = Image.fromarray(cv2_image)
 
-	for player in players:
-		player.setFrame(frame)
+	p1_changed = player1.setFrame(frame)
+	p2_changed = player2.setFrame(frame)
 
-	drawStats(frame)
+	changed = p1_changed or p2_changed
+
+	if (last_stats_frame is None) or changed:
+		last_stats_frame = Image.new('RGBA', (base_width, base_height), composite_color)
+		drawStats(last_stats_frame)
+
+	frame.paste(last_stats_frame, (0, 0), last_stats_frame)
+
+	frame = cv2.cvtColor(numpy.array(frame), cv2.COLOR_RGB2BGR)
+	out.write(frame);
 
 	print("Processed frame %d of %d (at %5.1f fps)" %
 		(

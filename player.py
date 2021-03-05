@@ -30,18 +30,21 @@ class Player:
 
 	# coded for 18 start
 	@staticmethod
-	def getTetrisDiff(p1, p2):
-		if p1.score > p2.score:
+	def getTetrisDiff(p1, p2, use_pace_score=False):
+		p1_score = p1.pace_score if use_pace_score else p1.score
+		p2_score = p2.pace_score if use_pace_score else p2.score
+
+		if p1_score > p2_score:
 			level = p2.level
 			lines = p2.lines
-		elif p2.score > p1.score:
+		elif p2_score > p1_score:
 			level = p1.level
 			lines = p1.lines
 		else:
 			return 0
 
 		tetrises = 0
-		diff = abs(p1.score - p2.score)
+		diff = abs(p1_score - p2_score)
 
 		while diff > 0:
 			if lines >= 126: # below 126 lines, level doesn't change every 10 lines
@@ -68,7 +71,7 @@ class Player:
 		level_img = frame.crop(self.level_loc)
 		level = scoreImage(level_img, "TD")[1]
 
-		self.setFrameData((lines, score, level))
+		return self.setFrameData((lines, score, level))
 
 	def setFrameData(self, values): # lines, score, level
 		# we always set values after 1 frame delay
@@ -77,7 +80,8 @@ class Player:
 
 		if lines is None or score is None or level is None:
 			self.in_game = False
-			return
+			return False
+
 		elif not self.in_game:
 			self.in_game = True
 			self.pending_lines = False
@@ -85,8 +89,12 @@ class Player:
 			self.lines = lines
 			self.score = score
 			self.level = level
+			return True
+
+		changed = False
 
 		if self.pending_lines:
+			changed = True
 			self.pending_lines = False;
 
 			if lines == None or lines == 0:
@@ -103,11 +111,14 @@ class Player:
 			self.pending_lines = True
 
 		if self.pending_score:
-			self.pending_lines = False;
+			changed = True
+			self.pending_score = False;
 			self.score = score;
 			self.pace_score = self.getPaceMaxScore()
 		elif score != self.score:
 			self.pending_score = True
+
+		return changed
 
 	def getPaceMaxScore(self):
 		# calculate maximum possible score from this point in the game
