@@ -86,60 +86,96 @@ def drawStats(frame):
 	try:
 		score_diff = abs(player1.score - player2.score)
 		tetris_diff = Player.getTetrisDiff(player1, player2)
+
+		pace_diff = abs(player1.pace_score - player2.pace_score)
+		pace_tetris_diff = 0 # can I use the same formula as for tetris_diff 🤔
 	except:
 		print(player1.score, player2.score)
 		return
 
+	p1 = {}
+	p2 = {}
+
 	if player1.score < player2.score:
-		p1 = {
+		p1["score"] = {
 			"score": "-%d" % (score_diff, ),
 			"tetrises": "-%.2f" % (tetris_diff, ),
 			"color": red
 		}
-		p2 = {
+		p2["score"] = {
 			"score": "+%d" % (score_diff, ),
 			"tetrises": "+%.2f" % (tetris_diff, ),
 			"color": green
 		}
 	elif player1.score < player2.score:
-		p1 = {
+		p1["score"] = {
 			"score": "-%d" % (score_diff, ),
 			"tetrises": "-%.2f" % (tetris_diff, ),
 			"color": red
 		}
-		p2 = {
+		p2["score"] = {
 			"score": "+%d" % (score_diff, ),
 			"tetrises": "+%.2f" % (tetris_diff, ),
 			"color": green
 		}
 	else:
-		p1 = p2 = {
+		p1["score"] = p2["score"] = {
 			"score": "+0",
 			"tetrises": "+0",
 			"color": green
 		}
 
+	if player1.pace_score < player2.pace_score:
+		p1["pace"] = {
+			"score": "-%d" % (pace_diff, ),
+			"tetrises": "-%.2f" % (pace_tetris_diff, ),
+			"color": red
+		}
+		p2["pace"] = {
+			"score": "+%d" % (pace_diff, ),
+			"tetrises": "+%.2f" % (pace_tetris_diff, ),
+			"color": green
+		}
+	elif player1.pace_score > player2.pace_score:
+		p1["pace"] = {
+			"score": "-%d" % (pace_diff, ),
+			"tetrises": "-%.2f" % (pace_tetris_diff, ),
+			"color": red
+		}
+		p2["pace"] = {
+			"score": "+%d" % (pace_diff, ),
+			"tetrises": "+%.2f" % (pace_tetris_diff, ),
+			"color": green
+		}
+	else:
+		p1["pace"] = p2["pace"] = {
+			"score": "+0",
+			"tetrises": "+0",
+			"color": green
+		}
+
+
 	# Draw Player 2 first (easier)
 	x, y = player2.stats_xy
 
 	drawTextWithBorder(draw
-		, p2["score"]
+		, p2["score"]["score"]
 		, (x, y)
-		, p2["color"]
+		, p2["score"]["color"]
 		, font_big
 	)
 
-	w, h = draw.textsize(p2["score"], font_big)
+	w, h = draw.textsize(p2["score"]["score"], font_big)
 	cur_y = y + h + spacing
 
 	drawTextWithBorder(draw
-		, p2["tetrises"]
+		, p2["score"]["tetrises"]
 		, (x, cur_y)
-		, p2["color"]
+		, p2["score"]["color"]
 		, font
 	)
 
-	w, h = draw.textsize(p2["tetrises"], font)
+	w, h = draw.textsize(p2["score"]["tetrises"], font)
 
 	drawTextWithBorder(draw
 		, "Tetrises"
@@ -148,15 +184,54 @@ def drawStats(frame):
 		, font
 	)
 
+	cur_y += h + spacing
+
+	drawTextWithBorder(draw
+		, p2["pace"]["score"]
+		, (x, cur_y)
+		, p2["pace"]["color"]
+		, font
+	)
+
+	w, h = draw.textsize(p2["pace"]["score"], font)
+
+	drawTextWithBorder(draw
+		, "Pace"
+		, (x + w + spacing, cur_y)
+		, white
+		, font
+	)
+
+	cur_y += h + spacing
+
+	drawTextWithBorder(draw
+		, p2["pace"]["tetrises"]
+		, (x, cur_y)
+		, p2["pace"]["color"]
+		, font
+	)
+
+	w, h = draw.textsize(p2["pace"]["tetrises"], font)
+
+	drawTextWithBorder(draw
+		, "Tetrises"
+		, (x + w + spacing, cur_y)
+		, white
+		, font
+	)
+
+
+	## and then player 1
+
 	x, y = player1.stats_xy
-	w, h = draw.textsize(p1["score"], font_big)
+	w, h = draw.textsize(p1["score"]["score"], font_big)
 	cur_y = y
 	cur_x = x - w
 
 	drawTextWithBorder(draw
-		, p1["score"]
+		, p1["score"]["score"]
 		, (cur_x, cur_y)
-		, p1["color"]
+		, p1["score"]["color"]
 		, font_big
 	)
 
@@ -172,13 +247,13 @@ def drawStats(frame):
 		, font
 	)
 
-	w, h = draw.textsize(p1["tetrises"], font)
+	w, h = draw.textsize(p1["score"]["tetrises"], font)
 	cur_x -= (w + spacing)
 
 	drawTextWithBorder(draw
-		, p1["tetrises"]
+		, p1["score"]["tetrises"]
 		, (cur_x, cur_y)
-		, p1["color"]
+		, p1["score"]["color"]
 		, font
 	)
 

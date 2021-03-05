@@ -16,9 +16,10 @@ class Player:
 
 		self.remaining_delay_frames = 0 # controls one frame delay to read line count
 
-		self.score = 0;
-		self.lines = 0;
-		self.level = 0;
+		self.score = 0
+		self.lines = 0
+		self.level = 0
+		self.pace_score = 0
 
 		self.in_game = False
 		self.pending_lines = True
@@ -104,8 +105,31 @@ class Player:
 		if self.pending_score:
 			self.pending_lines = False;
 			self.score = score;
+			self.pace_score = self.getPaceMaxScore()
 		elif score != self.score:
 			self.pending_score = True
+
+	def getPaceMaxScore(self):
+		# calculate maximum possible score from this point in the game
+		# assume lvl18 starts
+		level = self.level
+		score = self.score
+		lines = self.lines
+
+		# Naive iterative computation... Maybe there's a formula to get it quick?
+		# Oh well...
+
+		# Basically, we assume scoring all tetrises till into kill screen
+		while lines < 230:
+			if lines >= 126: # below 126 lines, level doesn't change every 10 lines
+				if lines % 10 >= 6: # the tetris is counted at end level, not start level
+					level += 1
+
+			lines += 4
+			score += tetris_value(level)
+
+		return score;
+
 
 	def getData(self, frame_idx):
 		return self.lines, self.score, self.level;
