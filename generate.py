@@ -97,7 +97,7 @@ def drawStats(frame):
 		pace_diff = abs(player1.pace_score - player2.pace_score)
 		pace_tetris_diff = Player.getTetrisDiff(player1, player2, use_pace_score=True)
 	except Exception as err:
-		print('exception', player1.score, player2.score)
+		print('exception', player1.score, player2.score, pace_diff, pace_tetris_diff)
 		print(err)
 		print("")
 		return
@@ -116,7 +116,7 @@ def drawStats(frame):
 			"tetrises": "+%.2f" % (tetris_diff, ),
 			"color": green
 		}
-	elif player1.score < player2.score:
+	elif player1.score > player2.score:
 		p1["score"] = {
 			"score": "-%d" % (score_diff, ),
 			"tetrises": "-%.2f" % (tetris_diff, ),
@@ -331,6 +331,10 @@ while True:
 	changed = p1_changed or p2_changed
 
 	if (last_stats_frame is None) or changed:
+		print('\r\n')
+		print('Change detected')
+		print(player1.score, player1.lines, player1.level, player1.pace_score)
+		print(player2.score, player2.lines, player2.level, player2.pace_score)
 		last_stats_frame = Image.new('RGBA', (base_width, base_height), composite_color)
 		drawStats(last_stats_frame)
 

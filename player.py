@@ -89,6 +89,7 @@ class Player:
 			self.lines = lines
 			self.score = score
 			self.level = level
+			self.pace_score = self.getPaceMaxScore()
 			return True
 
 		changed = False
