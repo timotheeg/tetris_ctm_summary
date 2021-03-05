@@ -20,6 +20,7 @@ class Player:
 		self.lines = 0;
 		self.level = 0;
 
+		self.in_game = False
 		self.pending_lines = True
 		self.pending_score = True
 
@@ -43,13 +44,13 @@ class Player:
 
 		while diff > 0:
 			if lines >= 126: # below 126 lines, level doesn't change every 10 lines
-				if lines % 10 >= 6:
+				if lines % 10 >= 6: # the tetris is counted at end level, not start level
 					level += 1
 
 			lines += 4
+			tetrises += 1
 
 			diff -= tetris_value(level)
-			tetrises += 1
 
 		# correct the overshot
 		tetrises += diff / tetris_value(level)
@@ -72,6 +73,17 @@ class Player:
 		# we always set values after 1 frame delay
 		# That is to allow them to settle and fix incorrect reads
 		lines, score, level = values
+
+		if lines is None or score is None or level is None:
+			self.in_game = False
+			return
+		elif not self.in_game:
+			self.in_game = True
+			self.pending_lines = False
+			self.pending_score = False
+			self.lines = lines
+			self.score = score
+			self.level = level
 
 		if self.pending_lines:
 			self.pending_lines = False;

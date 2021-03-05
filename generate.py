@@ -24,7 +24,7 @@ font_size = 32
 p1_line_count_xywh = (818, 58, 101, 31)
 p1_score_xywh = (572, 59, 206, 32)
 p1_level_xywh = (577, 168, 57, 28)
-p1_stats_xy = (507, 110) # player 1 data will be right aligned
+p1_stats_xy = (507, 110) # player 1 data will be right aligned on the x
 
 p2_line_count_xywh = (1260, 58, 100, 32)
 p2_score_xywh = (1016, 61, 205, 32)
@@ -38,7 +38,7 @@ players = [player1, player2]
 
 output_file = "%s.out.mp4" % source_file
 
-print("Generating TRT from file\n%s\ninto output file\n%s" % (
+print("Generating Stats from file\n%s\ninto output file\n%s" % (
 	source_file,
 	output_file
 ))
@@ -83,8 +83,12 @@ def drawStats(frame):
 
 	draw = ImageDraw.Draw(frame)
 
-	score_diff = abs(player1.score - player2.score);
-	tetris_diff = Player.getTetrisDiff(player1, player2);
+	try:
+		score_diff = abs(player1.score - player2.score)
+		tetris_diff = Player.getTetrisDiff(player1, player2)
+	except:
+		print(player1.score, player2.score)
+		return
 
 	if player1.score < player2.score:
 		p1 = {
@@ -94,18 +98,18 @@ def drawStats(frame):
 		}
 		p2 = {
 			"score": "+%d" % (score_diff, ),
-			"tetrises": "+%.2f" % (tetris_diff,),
+			"tetrises": "+%.2f" % (tetris_diff, ),
 			"color": green
 		}
 	elif player1.score < player2.score:
 		p1 = {
 			"score": "-%d" % (score_diff, ),
-			"tetrises": "-%.2f" % (tetris_diff,),
+			"tetrises": "-%.2f" % (tetris_diff, ),
 			"color": red
 		}
 		p2 = {
 			"score": "+%d" % (score_diff, ),
-			"tetrises": "+%.2f" % (tetris_diff,),
+			"tetrises": "+%.2f" % (tetris_diff, ),
 			"color": green
 		}
 	else:
