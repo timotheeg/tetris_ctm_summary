@@ -16,20 +16,21 @@ source_file = sys.argv[1]
 
 cap = cv2.VideoCapture(source_file)
 
-font = ImageFont.truetype(r'./prstartk_nes_tetris_8.ttf', 32)
+font = ImageFont.truetype(r'./prstartk_nes_tetris_8.ttf', 36)
 font_big = ImageFont.truetype(r'./prstartk_nes_tetris_8.ttf', 64)
 
-font_size = 32
+h_spacing = 10 # horizontal spacing
+v_spacing = 20 # vertical spacing
 
 p1_lines_xywh = (818, 58, 101, 31)
 p1_score_xywh = (572, 59, 206, 32)
 p1_level_xywh = (577, 168, 57, 28)
-p1_stats_xy = (507, 110) # player 1 data will be right aligned on the x
+p1_stats_xy = (525, 110) # player 1 data will be right aligned on the x
 
 p2_lines_xywh = (1260, 58, 100, 32)
 p2_score_xywh = (1016, 61, 205, 32)
 p2_level_xywh = (1022, 171, 56, 27)
-p2_stats_xy = (1430, 110)
+p2_stats_xy = (1405, 110)
 
 player1 = Player(p1_lines_xywh, p1_score_xywh, p1_level_xywh, p1_stats_xy)
 player2 = Player(p2_lines_xywh, p2_score_xywh, p2_level_xywh, p2_stats_xy)
@@ -64,28 +65,27 @@ def drawTextWithBorder(draw, text, loc, color, font):
 	x, y = loc
 
 	border_col  = (0, 0, 0, 255)
+	border_width = 4
 
 	# thin border - is this really needed??
-	draw.text((x-3,   y), text, border_col, font=font)
-	draw.text((x+3,   y), text, border_col, font=font)
-	draw.text((x,   y-3), text, border_col, font=font)
-	draw.text((x,   y+3), text, border_col, font=font)
+	draw.text((x-border_width,              y), text, border_col, font=font)
+	draw.text((x+border_width,              y), text, border_col, font=font)
+	draw.text((x,              y-border_width), text, border_col, font=font)
+	draw.text((x,              y+border_width), text, border_col, font=font)
 
 	# thicker border
-	draw.text((x-3, y-3), text, border_col, font=font)
-	draw.text((x+3, y-3), text, border_col, font=font)
-	draw.text((x-3, y+3), text, border_col, font=font)
-	draw.text((x+3, y+3), text, border_col, font=font)
+	draw.text((x-border_width, y-border_width), text, border_col, font=font)
+	draw.text((x+border_width, y-border_width), text, border_col, font=font)
+	draw.text((x-border_width, y+border_width), text, border_col, font=font)
+	draw.text((x+border_width, y+border_width), text, border_col, font=font)
 
 	# now draw the text over it
 	draw.text((x, y), text, color, font=font)
 
 
-spacing = 10
-
 def drawStats(frame):
-	red = (0xef, 0x05, 0x05)
-	green = (0x2e, 0xff, 0x10)
+	red = (0xef, 0x10, 0x10)
+	green = (0x30, 0xff, 0x10)
 	white = (0xff, 0xff, 0xff)
 
 	draw = ImageDraw.Draw(frame)
@@ -175,7 +175,7 @@ def drawStats(frame):
 	)
 
 	w, h = draw.textsize(p2["score"]["score"], font_big)
-	cur_y = y + h + spacing
+	cur_y = y + h + v_spacing
 
 	drawTextWithBorder(draw
 		, p2["score"]["tetrises"]
@@ -188,12 +188,12 @@ def drawStats(frame):
 
 	drawTextWithBorder(draw
 		, "Tetrises"
-		, (x + w + spacing, cur_y)
+		, (x + w + h_spacing, cur_y)
 		, white
 		, font
 	)
 
-	cur_y += h + spacing
+	cur_y += h + v_spacing
 
 	drawTextWithBorder(draw
 		, p2["pace"]["score"]
@@ -206,12 +206,12 @@ def drawStats(frame):
 
 	drawTextWithBorder(draw
 		, "Pace"
-		, (x + w + spacing, cur_y)
+		, (x + w + h_spacing, cur_y)
 		, white
 		, font
 	)
 
-	cur_y += h + spacing
+	cur_y += h + v_spacing
 
 	drawTextWithBorder(draw
 		, p2["pace"]["tetrises"]
@@ -224,7 +224,7 @@ def drawStats(frame):
 
 	drawTextWithBorder(draw
 		, "Tetrises"
-		, (x + w + spacing, cur_y)
+		, (x + w + h_spacing, cur_y)
 		, white
 		, font
 	)
@@ -244,7 +244,7 @@ def drawStats(frame):
 		, font_big
 	)
 
-	cur_y += h + spacing
+	cur_y += h + v_spacing
 
 	w, h = draw.textsize("Tetrises", font)
 	cur_x = x - w
@@ -257,7 +257,7 @@ def drawStats(frame):
 	)
 
 	w, h = draw.textsize(p1["score"]["tetrises"], font)
-	cur_x -= (w + spacing)
+	cur_x -= (w + h_spacing)
 
 	drawTextWithBorder(draw
 		, p1["score"]["tetrises"]
@@ -266,7 +266,7 @@ def drawStats(frame):
 		, font
 	)
 
-	cur_y += h + spacing
+	cur_y += h + v_spacing
 
 	w, h = draw.textsize("Pace", font)
 	cur_x = x - w
@@ -279,7 +279,7 @@ def drawStats(frame):
 	)
 
 	w, h = draw.textsize(p1["pace"]["score"], font)
-	cur_x -= (w + spacing)
+	cur_x -= (w + h_spacing)
 
 	drawTextWithBorder(draw
 		, p1["pace"]["score"]
@@ -288,7 +288,7 @@ def drawStats(frame):
 		, font
 	)
 
-	cur_y += h + spacing
+	cur_y += h + v_spacing
 
 	w, h = draw.textsize("Tetrises", font)
 	cur_x = x - w
@@ -301,7 +301,7 @@ def drawStats(frame):
 	)
 
 	w, h = draw.textsize(p1["pace"]["tetrises"], font)
-	cur_x -= (w + spacing)
+	cur_x -= (w + h_spacing)
 
 	drawTextWithBorder(draw
 		, p1["pace"]["tetrises"]
