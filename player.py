@@ -1,5 +1,6 @@
 from utils import xywh_to_ltrb
 from digitocr import scoreImage
+from optimal_scores_generator import scoring_potential
 
 FRAMES_READ_DELAY = 1
 
@@ -123,6 +124,13 @@ class Player:
 		return changed
 
 	def getPaceMaxScore(self):
+		return self.score + scoring_potential[self.lines]['score']
+
+		# code is a more naive algorithm, thaty just scores tetrises
+		# the table scoring_potential contains better strategies to squeeze single/double/triples
+		# to truly maximise the score
+
+		"""
 		# calculate maximum possible score from this point in the game
 		# assume lvl18 starts
 		level = self.level
@@ -142,6 +150,7 @@ class Player:
 			score += tetris_value(level)
 
 		return score;
+		"""
 
 
 	def getData(self, frame_idx):

@@ -65,7 +65,7 @@ def drawTextWithBorder(draw, text, loc, color, font):
 
 	border_col  = (0, 0, 0, 255)
 
-	# thin border
+	# thin border - is this really needed??
 	draw.text((x-3,   y), text, border_col, font=font)
 	draw.text((x+3,   y), text, border_col, font=font)
 	draw.text((x,   y-3), text, border_col, font=font)
