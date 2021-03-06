@@ -21,18 +21,18 @@ font_big = ImageFont.truetype(r'./prstartk_nes_tetris_8.ttf', 64)
 
 font_size = 32
 
-p1_line_count_xywh = (818, 58, 101, 31)
+p1_lines_xywh = (818, 58, 101, 31)
 p1_score_xywh = (572, 59, 206, 32)
 p1_level_xywh = (577, 168, 57, 28)
 p1_stats_xy = (507, 110) # player 1 data will be right aligned on the x
 
-p2_line_count_xywh = (1260, 58, 100, 32)
+p2_lines_xywh = (1260, 58, 100, 32)
 p2_score_xywh = (1016, 61, 205, 32)
 p2_level_xywh = (1022, 171, 56, 27)
 p2_stats_xy = (1430, 110)
 
-player1 = Player(p1_line_count_xywh, p1_score_xywh, p1_level_xywh, p1_stats_xy)
-player2 = Player(p2_line_count_xywh, p2_score_xywh, p2_level_xywh, p2_stats_xy)
+player1 = Player(p1_lines_xywh, p1_score_xywh, p1_level_xywh, p1_stats_xy)
+player2 = Player(p2_lines_xywh, p2_score_xywh, p2_level_xywh, p2_stats_xy)
 
 players = [player1, player2]
 
