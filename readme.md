@@ -63,6 +63,6 @@ OCR-ing the score, lines, level count from the CTM footage is done using the fil
 
 ## Related Project
 
-This project is pretty much a clone of tetris_rate_adder that I made for a similar purpose for Chris Higgins's project [Best of Five](https://www.kickstarter.com/projects/chrishiggins/best-of-five-the-classic-tetris-champions).
+This project is pretty much a modified clone of [tetris_rate_adder](https://github.com/timotheeg/tetris_rate_adder), that I made for a similar purpose for [Chris Higgins](https://www.twitch.tv/higginspdx)'s project [Best of Five](https://www.kickstarter.com/projects/chrishiggins/best-of-five-the-classic-tetris-champions).
 
 Take a look at [NESTrisStatsUI](https://github.com/timotheeg/NESTrisStatsUI) for a project computing Tetris stats from a live tetris games.
