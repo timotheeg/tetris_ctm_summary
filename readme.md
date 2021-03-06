@@ -43,6 +43,19 @@ python3 generate.py FILEPATH_TO_VIDEO_FILE
 
 ![Sample frame](./sample_frame.jpg)
 
+Data presented:
+* Score difference betweeen the 2 players, based on current scores
+* Score difference in term of tetrises (taking level progression into account)
+* Pace score difference
+* Pace score difference in term of tetrises
+
+The pace score is computed by projecting the player into the future, starting from their current state of score, lines, and level, and assuming they will score only tetrises all the way into the kill screen. This basically computes the best score they could possibly get in this ongoing game. The projection stops as soon as level reaches level 29. As the projection progresses, the tetris values at the increasing levels are accumulated, until the final pace score emerges.
+
+Some players can play several levels beyond the skill screen, but in the majority of cases, keeping kill screen as the baseline to compute a normalized pace score makes sense.
+
+The pace score is an interesting metric because a player may be ahead in point at a given point in time, but also vastly ahead in lines. That mans his opponent could be doing better overall, but playing a little more slowly. The pace score metrics, by projecting a perfect play onto both players is an indicator of the overall performance in the game so far.
+
+
 ## Aknowledgment
 
 OCR-ing the score, lines, level count from the CTM footage is done using the file `digitocr.py` from the excellent [NESTrisOCR](https://github.com/alex-ong/NESTrisOCR) project by [Alex Ong](https://github.com/alex-ong).
