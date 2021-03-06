@@ -57,7 +57,7 @@ class Player:
 			diff -= tetris_value(level)
 
 		# correct the overshot
-		# not: diff is negative, to this statement *reduces* th tetrises value
+		# note: diff is negative, to this statement *reduces* the tetrises value
 		tetrises += diff / tetris_value(level)
 
 		return tetrises
