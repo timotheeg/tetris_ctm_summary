@@ -1,5 +1,7 @@
 from utils import xywh_to_ltrb
 from digitocr import scoreImage
+from score_fixer import ScoreFixer
+
 from optimal_scores_generator import scoring_potential
 
 FRAMES_READ_DELAY = 1
@@ -26,6 +28,8 @@ class Player:
 		self.in_game = False
 		self.pending_lines = True
 		self.pending_score = True
+
+		self.score_fixer = ScoreFixer("ADDDDD")
 
 		self.tetris_line_count = 0
 		self.total_line_count = None
@@ -69,17 +73,16 @@ class Player:
 		lines = scoreImage(lines_img, "TDD")[1]
 
 		score_img = frame.crop(self.score_loc)
-		score = scoreImage(score_img, "ADDDDD")[1]
+		score_label, score  = scoreImage(score_img, "ADDDDD")
 
 		level_img = frame.crop(self.level_loc)
-		level = scoreImage(level_img, "TD")[1]
+		level_label, level = scoreImage(level_img, "TD")
 
-		return self.setFrameData((lines, score, level))
+		return self.setFrameData(lines, score, level, score_label, level_label)
 
-	def setFrameData(self, values): # lines, score, level
+	def setFrameData(self, lines, score, level, score_label, level_label): # lines, score, level
 		# we always set values after 1 frame delay
 		# That is to allow them to settle and fix incorrect reads
-		lines, score, level = values
 
 		if lines is None or score is None or level is None:
 			self.in_game = False
@@ -93,6 +96,10 @@ class Player:
 			self.score = score
 			self.level = level
 			self.pace_score = self.getPaceMaxScore()
+
+			self.score_fixer.reset()
+			self.score_fixer.fix(score_label, score)
+
 			return True
 
 		changed = False
@@ -121,7 +128,7 @@ class Player:
 		if self.pending_score:
 			changed = True
 			self.pending_score = False;
-			self.score = score;
+			self.score = self.score_fixer.fix(score_label, score)[1];
 			self.pace_score = self.getPaceMaxScore()
 		elif score != self.score:
 			self.pending_score = True
