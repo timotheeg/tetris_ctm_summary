@@ -6,6 +6,8 @@ from optimal_scores_generator import scoring_potential
 
 FRAMES_READ_DELAY = 1
 
+DEATH_NULLS = 5
+
 def tetris_value(level):
 	return 1200 * (level + 1)
 
@@ -25,7 +27,7 @@ class Player:
 		self.level = 0
 		self.pace_score = 0
 
-		self.in_game = False
+		self.not_in_game_count = 1
 		self.pending_lines = True
 		self.pending_score = True
 
@@ -85,11 +87,17 @@ class Player:
 		# That is to allow them to settle and fix incorrect reads
 
 		if lines is None or score is None or level is None:
-			self.in_game = False
+			self.not_in_game_count += 1
+
+			if self.not_in_game_count == DEATH_NULLS:
+				# player considered dead, score potential IS score
+				self.pace_score = self.score
+				return True
+
 			return False
 
-		elif not self.in_game:
-			self.in_game = True
+		elif self.not_in_game_count:
+			self.not_in_game_count = 0
 			self.pending_lines = False
 			self.pending_score = False
 			self.lines = lines
