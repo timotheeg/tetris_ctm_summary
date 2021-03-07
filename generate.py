@@ -20,14 +20,24 @@ cap = cv2.VideoCapture(source_file)
 
 font = ImageFont.truetype(r'./prstartk_nes_tetris_8.ttf', 36)
 font_big = ImageFont.truetype(r'./prstartk_nes_tetris_8.ttf', 64)
-font_verify = ImageFont.truetype(r'./prstartk_nes_tetris_8.ttf', 16)
+font_small = ImageFont.truetype(r'./prstartk_nes_tetris_8.ttf', 16)
 
 h_spacing = 10 # horizontal spacing
 v_spacing = 20 # vertical spacing
 
-text_has_border = False
+#################################
+# !! Tunables !!
+# Tune to match your input video files!
+#################################
 
-# read locations
+# TODO - Use config files OR argsparse for CLI control
+
+print_score_difference = True
+print_score_potential = False
+text_has_border = True
+
+
+# default read locations
 p1_lines_xywh = (818, 58, 101, 31)
 p1_score_xywh = (572, 59, 206, 32)
 p1_level_xywh = (577, 168, 57, 28)
@@ -37,24 +47,16 @@ p2_score_xywh = (1016, 61, 205, 32)
 p2_level_xywh = (1022, 171, 56, 27)
 
 
-#### calibration update
-p1_lines_xywh = (814, 58, 97, 30)
-p1_score_xywh = (570, 61, 202, 29)
-p1_level_xywh = (576, 169, 55, 26)
-
-p2_lines_xywh = (1259, 58, 99, 31)
-p2_score_xywh = (1017, 60, 205, 31)
-p2_level_xywh = (1023, 168, 56, 26)
-####
-
-
-# render locations - player 1 data will be right aligned
+# render locations - player 1 data is right aligned!
 p1_score_stats_xy = (525, 110)
 p1_pace_stats_xy = (525, 238)
 
 p2_score_stats_xy = (1405, 110)
 p2_pace_stats_xy = (1405, 238)
 
+#################################
+# !! Tunables !! - END
+#################################
 
 
 player1 = Player(p1_lines_xywh, p1_score_xywh, p1_level_xywh, p1_score_stats_xy, p1_pace_stats_xy)
@@ -62,7 +64,10 @@ player2 = Player(p2_lines_xywh, p2_score_xywh, p2_level_xywh, p2_score_stats_xy,
 
 players = [player1, player2]
 
-output_file = "%s.out.mp4" % source_file
+if do_verify:
+	output_file = "%s.verify.mp4" % source_file
+else:
+	output_file = "%s.out.mp4" % source_file
 
 print("Generating Stats from file\n%s\ninto output file\n%s" % (
 	source_file,
@@ -213,33 +218,34 @@ def drawStats(frame):
 			, p1_data
 			, (spacer, spacer)
 			, white
-			, font_verify
+			, font_small
 		)
 
-		w, h = draw.textsize(p2_data, font_verify)
+		w, h = draw.textsize(p2_data, font_small)
 
 		drawTextWithBorder(draw
 			, p2_data
 			, (base_width - w - spacer, spacer)
 			, white
-			, font_verify
+			, font_small
 		)
 
 	# =========================
 	# 1. render score stats
 
 	# Draw Player 2 first (easier because left aligned)
-	x, y = player2.score_stats_xy
+	x, cur_y = player2.score_stats_xy
 
-	drawTextWithBorder(draw
-		, p2["score"]["score"]
-		, (x, y)
-		, p2["score"]["color"]
-		, font_big
-	)
+	if print_score_difference:
+		drawTextWithBorder(draw
+			, p2["score"]["score"]
+			, (x, cur_y)
+			, p2["score"]["color"]
+			, font_big
+		)
 
-	w, h = draw.textsize(p2["score"]["score"], font_big)
-	cur_y = y + h + v_spacing
+		w, h = draw.textsize(p2["score"]["score"], font_big)
+		cur_y += h + v_spacing
 
 	drawTextWithBorder(draw
 		, p2["score"]["tetrises"]
@@ -259,19 +265,19 @@ def drawStats(frame):
 
 	# then player 1 score
 
-	x, y = player1.score_stats_xy
-	w, h = draw.textsize(p1["score"]["score"], font_big)
-	cur_y = y
-	cur_x = x - w
+	x, cur_y = player1.score_stats_xy
+	cur_x = x
 
-	drawTextWithBorder(draw
-		, p1["score"]["score"]
-		, (cur_x, cur_y)
-		, p1["score"]["color"]
-		, font_big
-	)
-
-	cur_y += h + v_spacing
+	if print_score_difference:
+		w, h = draw.textsize(p1["score"]["score"], font_big)
+		cur_x -= w
+		drawTextWithBorder(draw
+			, p1["score"]["score"]
+			, (cur_x, cur_y)
+			, p1["score"]["color"]
+			, font_big
+		)
+		cur_y += h + v_spacing
 
 	w, h = draw.textsize("Tetrises", font)
 	cur_x = x - w
@@ -297,9 +303,20 @@ def drawStats(frame):
 	# =========================
 	# 2. render pace stats
 
-	x, y = player2.pace_stats_xy
+	# Player 2 first again
+
+	x, cur_y = player2.pace_stats_xy
 	cur_x = x
-	cur_y = y
+
+	if print_score_potential:
+		drawTextWithBorder(draw
+			, "Pace Potential: %d" % (player2.pace_score, )
+			, (cur_x, cur_y)
+			, white
+			, font_small
+		)
+		w, h = draw.textsize("0", font_small)
+		cur_y += h + v_spacing
 
 	drawTextWithBorder(draw
 		, p2["pace"]["score"]
@@ -337,10 +354,22 @@ def drawStats(frame):
 
 	## and finally player 1 pace
 
-	x, y = player1.pace_stats_xy
+	x, cur_y = player1.pace_stats_xy
+
+	if print_score_potential:
+		potential_txt = "Pace Potential: %d" % (player1.pace_score, )
+		w, h = draw.textsize(potential_txt, font_small)
+		cur_x = x - w
+		drawTextWithBorder(draw
+			, potential_txt
+			, (cur_x, cur_y)
+			, white
+			, font_small
+		)
+		cur_y += h + v_spacing
+
 	w, h = draw.textsize("Pace", font)
 	cur_x = x - w
-	cur_y = y
 
 	drawTextWithBorder(draw
 		, "Pace"
@@ -402,7 +431,7 @@ while True:
 	changed = p1_changed or p2_changed
 
 	if (last_stats_frame is None) or changed:
-		print('\r\n')
+		print('\n')
 		print('Change detected')
 		print(player1.score, player1.lines, player1.level, player1.pace_score)
 		print(player2.score, player2.lines, player2.level, player2.pace_score)

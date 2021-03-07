@@ -109,6 +109,10 @@ class Player:
 					self.tetris_line_count =+ 4
 
 			self.lines = lines;
+
+			# level maps for 30 and beyond:
+			# 00:30 - 0A:31 - 14:32 - 1E:33 - 28:34 - 32:35
+
 			self.level = level;
 
 		elif lines != self.lines:
