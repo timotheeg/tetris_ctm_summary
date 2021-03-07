@@ -118,14 +118,14 @@ def drawStats(frame):
 		}
 	elif player1.score > player2.score:
 		p1["score"] = {
-			"score": "-%d" % (score_diff, ),
-			"tetrises": "-%.2f" % (tetris_diff, ),
-			"color": red
-		}
-		p2["score"] = {
 			"score": "+%d" % (score_diff, ),
 			"tetrises": "+%.2f" % (tetris_diff, ),
 			"color": green
+		}
+		p2["score"] = {
+			"score": "-%d" % (score_diff, ),
+			"tetrises": "-%.2f" % (tetris_diff, ),
+			"color": red
 		}
 	else:
 		p1["score"] = p2["score"] = {
@@ -147,14 +147,14 @@ def drawStats(frame):
 		}
 	elif player1.pace_score > player2.pace_score:
 		p1["pace"] = {
-			"score": "-%d" % (pace_diff, ),
-			"tetrises": "-%.2f" % (pace_tetris_diff, ),
-			"color": red
-		}
-		p2["pace"] = {
 			"score": "+%d" % (pace_diff, ),
 			"tetrises": "+%.2f" % (pace_tetris_diff, ),
 			"color": green
+		}
+		p2["pace"] = {
+			"score": "-%d" % (pace_diff, ),
+			"tetrises": "-%.2f" % (pace_tetris_diff, ),
+			"color": red
 		}
 	else:
 		p1["pace"] = p2["pace"] = {
