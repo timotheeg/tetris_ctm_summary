@@ -1,8 +1,6 @@
 class ScoreFixer(object):
-	def __init__(self, pattern):
+	def __init__(self):
 		self.lastGoodLabel = None
-		self.pattern = pattern
-		self.doFix = pattern[0] == "A"
 
 	def charToDigit(self, item):
 		return int(item, 16)
@@ -14,10 +12,7 @@ class ScoreFixer(object):
 		self.lastGoodLabel = None
 
 	def fix(self, label, value):
-		if (not self.doFix) or (label is None):
-			return label, value
-
-		if self.lastGoodLabel is None:
+		if (label is None) or (self.lastGoodLabel is None):
 			self.lastGoodLabel = label
 			return label, value
 

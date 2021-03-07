@@ -31,7 +31,7 @@ class Player:
 		self.pending_lines = True
 		self.pending_score = True
 
-		self.score_fixer = ScoreFixer("ADDDDD")
+		self.score_fixer = ScoreFixer()
 
 		self.tetris_line_count = 0
 		self.total_line_count = None
