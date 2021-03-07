@@ -15,11 +15,7 @@ class LevelFixer(object):
 		# what's the logic? 🤔
 
 		# Fix the levels with no ambiguity
-		if label == '0A':
-			label = '31'
-			value = 31
-
-		elif label == '1E':
+		if label == '1E':
 			label = '33'
 			value = 33
 
@@ -34,13 +30,18 @@ class LevelFixer(object):
 					label = '30'
 					value = 30
 
+			elif self.lastGoodLabel == "30" or self.lastGoodLabel == "31":
+				if label == '0A' or label == '04':
+					label = '31'
+					value = 31
+
 			elif self.lastGoodLabel == "31" or self.lastGoodLabel == "32":
-				if label == '14':
+				if label == '14' or label == '1A':
 					label = '32'
 					value = 32
 
 			elif self.lastGoodLabel == "33" or self.lastGoodLabel == "34":
-				if label == '28':
+				if label == '28' or label == '2B':
 					label = '34'
 					value = 34
 
