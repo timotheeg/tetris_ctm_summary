@@ -13,11 +13,14 @@ from player import Player
 start_time = time.time()
 
 source_file = sys.argv[1]
+do_verify = sys.argv[-1] == '--verify'
+
 
 cap = cv2.VideoCapture(source_file)
 
 font = ImageFont.truetype(r'./prstartk_nes_tetris_8.ttf', 36)
 font_big = ImageFont.truetype(r'./prstartk_nes_tetris_8.ttf', 64)
+font_verify = ImageFont.truetype(r'./prstartk_nes_tetris_8.ttf', 16)
 
 h_spacing = 10 # horizontal spacing
 v_spacing = 20 # vertical spacing
@@ -163,6 +166,44 @@ def drawStats(frame):
 			"color": green
 		}
 
+
+	# =========================
+	# 0. Draw verification data if needed
+
+	if do_verify:
+		p1_data = "%d %d %d %d" % (
+			player1.score,
+			player1.lines,
+			player1.level,
+			player1.pace_score,
+		)
+		p2_data = "%d %d %d %d" % (
+			player2.score,
+			player2.lines,
+			player2.level,
+			player2.pace_score,
+		)
+
+		spacer = 5
+
+		drawTextWithBorder(draw
+			, p1_data
+			, (spacer, spacer)
+			, white
+			, font_verify
+		)
+
+		w, h = draw.textsize(p2_data, font_verify)
+
+		drawTextWithBorder(draw
+			, p2_data
+			, (base_width - w - spacer, spacer)
+			, white
+			, font_verify
+		)
+
+	# =========================
+	# 1. render score stats
 
 	# Draw Player 2 first (easier because left aligned)
 	x, y = player2.stats_xy
