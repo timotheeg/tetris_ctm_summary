@@ -129,9 +129,8 @@ class Player:
 					self.tetris_line_count =+ 4
 
 			self.lines = lines;
-
-
 			self.level = self.level_fixer.fix(level_label, level)[1]
+			self.pace_score = self.getPaceMaxScore()
 
 		elif lines != self.lines:
 			self.pending_lines = True
