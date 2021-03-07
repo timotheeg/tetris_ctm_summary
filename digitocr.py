@@ -11,7 +11,7 @@ digitsMap = {
     "D": digits,
     "A": digits + ["A", "B", "C", "D", "E", "F"],
     "B": ["0", "1", "null"],
-    "T": ["0", "1", "2", "null"],
+    "T": ["0", "1", "2", "3", "null"],
 }
 
 MONO = True

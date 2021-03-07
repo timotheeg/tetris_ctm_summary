@@ -1,6 +1,7 @@
 from utils import xywh_to_ltrb
 from digitocr import scoreImage
 from score_fixer import ScoreFixer
+from level_fixer import LevelFixer
 
 from optimal_scores_generator import scoring_potential
 
@@ -32,6 +33,7 @@ class Player:
 		self.pending_score = True
 
 		self.score_fixer = ScoreFixer()
+		self.level_fixer = LevelFixer()
 
 		self.tetris_line_count = 0
 		self.total_line_count = None
@@ -78,7 +80,7 @@ class Player:
 		score_label, score  = scoreImage(score_img, "ADDDDD")
 
 		level_img = frame.crop(self.level_loc)
-		level_label, level = scoreImage(level_img, "TD")
+		level_label, level = scoreImage(level_img, "TA")
 
 		return self.setFrameData(lines, score, level, score_label, level_label)
 
@@ -108,6 +110,9 @@ class Player:
 			self.score_fixer.reset()
 			self.score_fixer.fix(score_label, score)
 
+			self.level_fixer.reset()
+			self.level_fixer.fix(level_label, level)
+
 			return True
 
 		changed = False
@@ -125,10 +130,8 @@ class Player:
 
 			self.lines = lines;
 
-			# level maps for 30 and beyond:
-			# 00:30 - 0A:31 - 14:32 - 1E:33 - 28:34 - 32:35
 
-			self.level = level;
+			self.level = self.level_fixer.fix(level_label, level)[1]
 
 		elif lines != self.lines:
 			self.pending_lines = True
