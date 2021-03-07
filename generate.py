@@ -25,6 +25,9 @@ font_verify = ImageFont.truetype(r'./prstartk_nes_tetris_8.ttf', 16)
 h_spacing = 10 # horizontal spacing
 v_spacing = 20 # vertical spacing
 
+text_has_border = False
+
+# read locations
 p1_lines_xywh = (818, 58, 101, 31)
 p1_score_xywh = (572, 59, 206, 32)
 p1_level_xywh = (577, 168, 57, 28)
@@ -70,17 +73,18 @@ def drawTextWithBorder(draw, text, loc, color, font):
 	border_col  = (0, 0, 0, 255)
 	border_width = 4
 
-	# thin border - is this really needed??
-	draw.text((x-border_width,              y), text, border_col, font=font)
-	draw.text((x+border_width,              y), text, border_col, font=font)
-	draw.text((x,              y-border_width), text, border_col, font=font)
-	draw.text((x,              y+border_width), text, border_col, font=font)
+	if text_has_border:
+		# thin border - is this really needed??
+		draw.text((x-border_width,              y), text, border_col, font=font)
+		draw.text((x+border_width,              y), text, border_col, font=font)
+		draw.text((x,              y-border_width), text, border_col, font=font)
+		draw.text((x,              y+border_width), text, border_col, font=font)
 
-	# thicker border
-	draw.text((x-border_width, y-border_width), text, border_col, font=font)
-	draw.text((x+border_width, y-border_width), text, border_col, font=font)
-	draw.text((x-border_width, y+border_width), text, border_col, font=font)
-	draw.text((x+border_width, y+border_width), text, border_col, font=font)
+		# thicker border
+		draw.text((x-border_width, y-border_width), text, border_col, font=font)
+		draw.text((x+border_width, y-border_width), text, border_col, font=font)
+		draw.text((x-border_width, y+border_width), text, border_col, font=font)
+		draw.text((x+border_width, y+border_width), text, border_col, font=font)
 
 	# now draw the text over it
 	draw.text((x, y), text, color, font=font)
