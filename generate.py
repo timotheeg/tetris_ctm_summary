@@ -31,15 +31,34 @@ text_has_border = False
 p1_lines_xywh = (818, 58, 101, 31)
 p1_score_xywh = (572, 59, 206, 32)
 p1_level_xywh = (577, 168, 57, 28)
-p1_stats_xy = (525, 110) # player 1 data will be right aligned on the x
 
 p2_lines_xywh = (1260, 58, 100, 32)
 p2_score_xywh = (1016, 61, 205, 32)
 p2_level_xywh = (1022, 171, 56, 27)
-p2_stats_xy = (1405, 110)
 
-player1 = Player(p1_lines_xywh, p1_score_xywh, p1_level_xywh, p1_stats_xy)
-player2 = Player(p2_lines_xywh, p2_score_xywh, p2_level_xywh, p2_stats_xy)
+
+#### calibration update
+p1_lines_xywh = (814, 58, 97, 30)
+p1_score_xywh = (570, 61, 202, 29)
+p1_level_xywh = (576, 169, 55, 26)
+
+p2_lines_xywh = (1259, 58, 99, 31)
+p2_score_xywh = (1017, 60, 205, 31)
+p2_level_xywh = (1023, 168, 56, 26)
+####
+
+
+# render locations - player 1 data will be right aligned
+p1_score_stats_xy = (525, 110)
+p1_pace_stats_xy = (525, 238)
+
+p2_score_stats_xy = (1405, 110)
+p2_pace_stats_xy = (1405, 238)
+
+
+
+player1 = Player(p1_lines_xywh, p1_score_xywh, p1_level_xywh, p1_score_stats_xy, p1_pace_stats_xy)
+player2 = Player(p2_lines_xywh, p2_score_xywh, p2_level_xywh, p2_score_stats_xy, p2_pace_stats_xy)
 
 players = [player1, player2]
 
@@ -57,7 +76,7 @@ base_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 out = cv2.VideoWriter(
 	output_file,
 	cv2.VideoWriter_fourcc(*'mp4v'),
-	23.976,
+	23.976, # can this frame rate bethe same as the source video?
 	(
 		base_width,
 		base_height
@@ -210,7 +229,7 @@ def drawStats(frame):
 	# 1. render score stats
 
 	# Draw Player 2 first (easier because left aligned)
-	x, y = player2.stats_xy
+	x, y = player2.score_stats_xy
 
 	drawTextWithBorder(draw
 		, p2["score"]["score"]
@@ -238,46 +257,9 @@ def drawStats(frame):
 		, font
 	)
 
-	cur_y += h + v_spacing
+	# then player 1 score
 
-	drawTextWithBorder(draw
-		, p2["pace"]["score"]
-		, (x, cur_y)
-		, p2["pace"]["color"]
-		, font
-	)
-
-	w, h = draw.textsize(p2["pace"]["score"], font)
-
-	drawTextWithBorder(draw
-		, "Pace"
-		, (x + w + h_spacing, cur_y)
-		, white
-		, font
-	)
-
-	cur_y += h + v_spacing
-
-	drawTextWithBorder(draw
-		, p2["pace"]["tetrises"]
-		, (x, cur_y)
-		, p2["pace"]["color"]
-		, font
-	)
-
-	w, h = draw.textsize(p2["pace"]["tetrises"], font)
-
-	drawTextWithBorder(draw
-		, "Tetrises"
-		, (x + w + h_spacing, cur_y)
-		, white
-		, font
-	)
-
-
-	## and then player 1... right aligned T_T
-
-	x, y = player1.stats_xy
+	x, y = player1.score_stats_xy
 	w, h = draw.textsize(p1["score"]["score"], font_big)
 	cur_y = y
 	cur_x = x - w
@@ -311,10 +293,54 @@ def drawStats(frame):
 		, font
 	)
 
+
+	# =========================
+	# 2. render pace stats
+
+	x, y = player2.pace_stats_xy
+	cur_x = x
+	cur_y = y
+
+	drawTextWithBorder(draw
+		, p2["pace"]["score"]
+		, (cur_x, cur_y)
+		, p2["pace"]["color"]
+		, font
+	)
+
+	w, h = draw.textsize(p2["pace"]["score"], font)
+
+	drawTextWithBorder(draw
+		, "Pace"
+		, (x + w + h_spacing, cur_y)
+		, white
+		, font
+	)
+
 	cur_y += h + v_spacing
 
+	drawTextWithBorder(draw
+		, p2["pace"]["tetrises"]
+		, (x, cur_y)
+		, p2["pace"]["color"]
+		, font
+	)
+
+	w, h = draw.textsize(p2["pace"]["tetrises"], font)
+
+	drawTextWithBorder(draw
+		, "Tetrises"
+		, (x + w + h_spacing, cur_y)
+		, white
+		, font
+	)
+
+	## and finally player 1 pace
+
+	x, y = player1.pace_stats_xy
 	w, h = draw.textsize("Pace", font)
 	cur_x = x - w
+	cur_y = y
 
 	drawTextWithBorder(draw
 		, "Pace"
@@ -380,6 +406,7 @@ while True:
 		print('Change detected')
 		print(player1.score, player1.lines, player1.level, player1.pace_score)
 		print(player2.score, player2.lines, player2.level, player2.pace_score)
+
 		last_stats_frame = Image.new('RGBA', (base_width, base_height), composite_color)
 		drawStats(last_stats_frame)
 

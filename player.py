@@ -8,12 +8,13 @@ def tetris_value(level):
 	return 1200 * (level + 1)
 
 class Player:
-	def __init__(self, lines_loc_xywh, score_loc_xywh, level_loc_xywh, stats_xy):
+	def __init__(self, lines_loc_xywh, score_loc_xywh, level_loc_xywh, score_stats_xy, pace_stats_xy):
 		self.lines_loc = xywh_to_ltrb(lines_loc_xywh)
 		self.score_loc = xywh_to_ltrb(score_loc_xywh)
 		self.level_loc = xywh_to_ltrb(level_loc_xywh)
 
-		self.stats_xy = stats_xy
+		self.score_stats_xy = score_stats_xy
+		self.pace_stats_xy = pace_stats_xy
 
 		self.remaining_delay_frames = 0 # controls one frame delay to read line count
 
