@@ -124,15 +124,19 @@ class Player:
 		return changed
 
 	def getPaceMaxScore(self):
-		return self.score + scoring_potential[self.lines]['score']
+		try:
+			return self.score + scoring_potential[self.lines]['score']
+		except:
+			return self.score # assume key error, lines > 230, extra potential is 0
 
-		# code is a more naive algorithm, thaty just scores tetrises
+		# code below is a naive algorithm, that just scores tetrises all the way into the kill screen
 		# the table scoring_potential contains better strategies to squeeze single/double/triples
 		# to truly maximise the score
 
 		"""
 		# calculate maximum possible score from this point in the game
 		# assume lvl18 starts
+
 		level = self.level
 		score = self.score
 		lines = self.lines
