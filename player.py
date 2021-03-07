@@ -139,7 +139,7 @@ class Player:
 		if self.pending_score:
 			changed = True
 			self.pending_score = False;
-			self.score = self.score_fixer.fix(score_label, score)[1];
+			self.score = self.score_fixer.fix(score_label, score)[1]
 			self.pace_score = self.getPaceMaxScore()
 		elif score != self.score:
 			self.pending_score = True
