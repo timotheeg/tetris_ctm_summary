@@ -10,61 +10,53 @@ from PIL import ImageDraw
 
 from player import Player
 
+import argparse
+
 start_time = time.time()
 
-source_file = sys.argv[1]
-do_verify = sys.argv[-1] == '--verify'
 
+parser = argparse.ArgumentParser(description='Compute commpetition Tetris stats')
+parser.add_argument('--verify', action='store_true')
+parser.add_argument('--snap', type=int)
+parser.add_argument('source_video')
 
-cap = cv2.VideoCapture(source_file)
+args = parser.parse_args()
 
-font = ImageFont.truetype(r'./prstartk_nes_tetris_8.ttf', 36)
-font_big = ImageFont.truetype(r'./prstartk_nes_tetris_8.ttf', 64)
-font_small = ImageFont.truetype(r'./prstartk_nes_tetris_8.ttf', 16)
+source_file = args.source_video
 
+# config must be present and valid, will throw if not
+with open('config.json') as f:
+	conf = json.load(f)
+
+cap = cv2.VideoCapture(args.source_video)
+
+# More stuff we *could* put in config?
 h_spacing = 10 # horizontal spacing
 v_spacing = 20 # vertical spacing
+font_file = './prstartk_nes_tetris_8.ttf'
 
-#################################
-# !! Tunables !!
-# Tune to match your input video files!
-#################################
+font = ImageFont.truetype(font_file, 36)
+font_big = ImageFont.truetype(font_file, 64)
+font_small = ImageFont.truetype(font_file, 16)
 
-# TODO - Use config files OR argsparse for CLI control
-
-print_score_difference = True
-print_score_potential = False
-text_has_border = True
-
-
-# default read locations
-p1_lines_xywh = (818, 58, 101, 31)
-p1_score_xywh = (572, 59, 206, 32)
-p1_level_xywh = (577, 168, 57, 28)
-
-p2_lines_xywh = (1260, 58, 100, 32)
-p2_score_xywh = (1016, 61, 205, 32)
-p2_level_xywh = (1022, 171, 56, 27)
-
-
-# render locations - player 1 data is right aligned!
-p1_score_stats_xy = (525, 110)
-p1_pace_stats_xy = (525, 238)
-
-p2_score_stats_xy = (1405, 110)
-p2_pace_stats_xy = (1405, 238)
-
-#################################
-# !! Tunables !! - END
-#################################
-
-
-player1 = Player(p1_lines_xywh, p1_score_xywh, p1_level_xywh, p1_score_stats_xy, p1_pace_stats_xy)
-player2 = Player(p2_lines_xywh, p2_score_xywh, p2_level_xywh, p2_score_stats_xy, p2_pace_stats_xy)
+player1 = Player(
+	conf["p1_lines_xywh"],
+	conf["p1_score_xywh"],
+	conf["p1_level_xywh"],
+	conf["p1_score_stats_xy"],
+	conf["p1_pace_stats_xy"]
+)
+player2 = Player(
+	conf["p2_lines_xywh"],
+	conf["p2_score_xywh"],
+	conf["p2_level_xywh"],
+	conf["p2_score_stats_xy"],
+	conf["p2_pace_stats_xy"]
+)
 
 players = [player1, player2]
 
-if do_verify:
+if args.verify:
 	output_file = "%s.verify.mp4" % source_file
 else:
 	output_file = "%s.out.mp4" % source_file
@@ -78,15 +70,16 @@ total_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
 base_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 base_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-out = cv2.VideoWriter(
-	output_file,
-	cv2.VideoWriter_fourcc(*'mp4v'),
-	23.976, # can this frame rate bethe same as the source video?
-	(
-		base_width,
-		base_height
+if not args.snap:
+	out = cv2.VideoWriter(
+		output_file,
+		cv2.VideoWriter_fourcc(*'mp4v'),
+		cap.get(cv2.CAP_PROP_FPS),
+		(
+			base_width,
+			base_height
+		)
 	)
-)
 
 composite_color = (255, 0, 255, 0)
 
@@ -97,7 +90,7 @@ def drawTextWithBorder(draw, text, loc, color, font):
 	border_col  = (0, 0, 0, 255)
 	border_width = 4
 
-	if text_has_border:
+	if conf["text_has_border"]:
 		# thin border - is this really needed??
 		draw.text((x-border_width,              y), text, border_col, font=font)
 		draw.text((x+border_width,              y), text, border_col, font=font)
@@ -198,7 +191,7 @@ def drawStats(frame):
 	# =========================
 	# 0. Draw verification data if needed
 
-	if do_verify:
+	if args.verify:
 		spacer = 5
 		w, h = draw.textsize("0", font_small)
 
@@ -254,7 +247,7 @@ def drawStats(frame):
 	# Draw Player 2 first (easier because left aligned)
 	x, cur_y = player2.score_stats_xy
 
-	if print_score_difference:
+	if conf["print_score_difference"]:
 		drawTextWithBorder(draw
 			, p2["score"]["score"]
 			, (x, cur_y)
@@ -286,7 +279,7 @@ def drawStats(frame):
 	x, cur_y = player1.score_stats_xy
 	cur_x = x
 
-	if print_score_difference:
+	if conf["print_score_difference"]:
 		w, h = draw.textsize(p1["score"]["score"], font_big)
 		cur_x -= w
 		drawTextWithBorder(draw
@@ -326,7 +319,7 @@ def drawStats(frame):
 	x, cur_y = player2.pace_stats_xy
 	cur_x = x
 
-	if print_score_potential:
+	if conf["print_score_potential"]:
 		drawTextWithBorder(draw
 			, "Pace Potential: %d" % (player2.pace_score, )
 			, (cur_x, cur_y)
@@ -374,7 +367,7 @@ def drawStats(frame):
 
 	x, cur_y = player1.pace_stats_xy
 
-	if print_score_potential:
+	if conf["print_score_potential"]:
 		potential_txt = "Pace Potential: %d" % (player1.pace_score, )
 		w, h = draw.textsize(potential_txt, font_small)
 		cur_x = x - w
@@ -428,6 +421,23 @@ def drawStats(frame):
 		, font
 	)
 
+def drawAreas(frame):
+	draw = ImageDraw.Draw(frame, "RGBA")
+	orange = (0xFF, 0x6C, 0x00, 100)
+	for id in [
+		"p1_lines_xywh",
+		"p1_score_xywh",
+		"p1_level_xywh",
+		"p2_lines_xywh",
+		"p2_score_xywh",
+		"p2_level_xywh",
+	]:
+		x, y, w, h = conf[id]
+		draw.rectangle([
+			(x, y),
+			(x+w, y+h),
+		], fill=orange)
+
 
 frame_idx = -1
 last_stats_frame = None
@@ -440,13 +450,16 @@ while True:
 
 	frame_idx += 1
 
+	if args.snap and frame_idx < args.snap:
+		continue
+
 	cv2_image = cv2.cvtColor(cv2_image, cv2.COLOR_BGR2RGB)
 	frame = Image.fromarray(cv2_image)
 
 	p1_changed = player1.setFrame(frame)
 	p2_changed = player2.setFrame(frame)
 
-	changed = p1_changed or p2_changed
+	changed = p1_changed or p2_changed or args.snap
 
 	if (last_stats_frame is None) or changed:
 		print('\n')
@@ -458,6 +471,11 @@ while True:
 		drawStats(last_stats_frame)
 
 	frame.paste(last_stats_frame, (0, 0), last_stats_frame)
+
+	if args.snap:
+		drawAreas(frame)
+		frame.show()
+		sys.exit(0)
 
 	frame = cv2.cvtColor(numpy.array(frame), cv2.COLOR_RGB2BGR)
 	out.write(frame);

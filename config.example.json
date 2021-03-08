@@ -1,0 +1,19 @@
+{
+	"print_score_difference": true,
+	"print_score_potential": true,
+	"text_has_border": true,
+
+	"p1_lines_xywh": [818, 58, 101, 31],
+	"p1_score_xywh": [572, 59, 206, 32],
+	"p1_level_xywh": [577, 168, 57, 28],
+
+	"p2_lines_xywh": [1260, 58, 100, 32],
+	"p2_score_xywh": [1016, 61, 205, 32],
+	"p2_level_xywh": [1022, 171, 56, 27],
+
+	"p1_score_stats_xy": [525, 110],
+	"p1_pace_stats_xy": [525, 350],
+
+	"p2_score_stats_xy": [1405, 110],
+	"p2_pace_stats_xy": [1405, 350]
+}
