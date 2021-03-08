@@ -30,27 +30,27 @@ class ScoreFixer(object):
 
 		# K, if this point is reached, something is not right, and we need to apply correction
 
-		# switch first digit between 8 and B dependant on last state.
-		if self.lastGoodLabel[0] == "A" or self.lastGoodLabel[0] == "B":
-			if label[0] == "8":
-				label = "B" + label[1:]
-				value += (11-8)*10**6
+		if label[0] == "A":
+			if self.lastGoodLabel[0] == "3" or self.lastGoodLabel[0] == "4":
+				label = "4" + label[1:]
+				value += (4-10)*10**6
 
-		elif self.lastGoodLabel[0] == "7" or self.lastGoodLabel[0] == "8":
-			if label[0] == "B":
-				label = "8" + label[1:]
-				value += (8-11)*10**6
-
-		# switch first digit between 4 and A dependant on last state.
-		elif self.lastGoodLabel[0] == "9" or self.lastGoodLabel[0] == "A":
-			if label[0] == "4":
+		elif label[0] == "4":
+			if self.lastGoodLabel[0] == "9" or self.lastGoodLabel[0] == "A":
 				label = "A" + label[1:]
 				value += (10-4)*10**6
 
-		elif self.lastGoodLabel[0] == "3" or self.lastGoodLabel[0] == "4":
-			if label[0] == "A":
-				label = "4" + label[1:]
-				value += (4-10)*10**6
+
+		elif label[0] == "8":
+			if self.lastGoodLabel[0] == "A" or self.lastGoodLabel[0] == "B":
+				label = "B" + label[1:]
+				value += (11-8)*10**6
+
+		elif label[0] == "B":
+			if self.lastGoodLabel[0] == "7" or self.lastGoodLabel[0] == "8":
+				label = "8" + label[1:]
+				value += (8-11)*10**6
+
 
 		self.lastGoodLabel = label
 
