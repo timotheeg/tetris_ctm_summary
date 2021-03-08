@@ -26,8 +26,8 @@ Instead, cut your video into segment by game to comment on, and then identify th
 The script needs to OCR both player's score, lines, and level to compute stats. The program user must therefore supply the location of the values in the source video file.
 
 The areas are all described by 4 values:
-```
-[left, top, width, height]
+```javascript
+[x, y, width, height]
 ```
 like this:
 ```javascript
