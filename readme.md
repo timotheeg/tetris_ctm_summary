@@ -57,7 +57,7 @@ p2_score_stats_xy = (1405, 110)
 p2_pace_stats_xy = (1405, 238)
 ```
 
-Do keep in mind, that the `(x, y)` location above represents the top-right corner for player 1 (because player 1's test is right aligned), and the top-left corner for player 2.
+Do keep in mind, that the `(x, y)` location above represents the top-right corner for player 1 (because player 1's text is right aligned), and the top-left corner for player 2.
 
 ## Running the script
 
