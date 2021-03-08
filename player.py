@@ -85,6 +85,9 @@ class Player:
 		return self.setFrameData(lines, score, level, score_label, level_label)
 
 	def setFrameData(self, lines, score, level, score_label, level_label): # lines, score, level
+		# assign raw data not suitable for computation, but useful to debug
+		self.raw_data = (lines, score, level, score_label, level_label)
+
 		# we always set values after 1 frame delay
 		# That is to allow them to settle and fix incorrect reads
 

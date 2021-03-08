@@ -199,6 +199,9 @@ def drawStats(frame):
 	# 0. Draw verification data if needed
 
 	if do_verify:
+		spacer = 5
+		w, h = draw.textsize("0", font_small)
+
 		p1_data = "%d %d %d %d" % (
 			player1.score,
 			player1.lines,
@@ -212,11 +215,26 @@ def drawStats(frame):
 			player2.pace_score,
 		)
 
-		spacer = 5
-
+		drawTextWithBorder(draw
+			, ' '.join([str(v).upper() for v in player1.raw_data])
+			, (spacer, spacer)
+			, white
+			, font_small
+		)
 		drawTextWithBorder(draw
 			, p1_data
-			, (spacer, spacer)
+			, (spacer, h + spacer * 2)
+			, white
+			, font_small
+		)
+
+		p2_raw = ' '.join([str(v).upper() for v in player2.raw_data])
+
+		w, h = draw.textsize(p2_raw, font_small)
+
+		drawTextWithBorder(draw
+			, p2_raw
+			, (base_width - w - spacer, spacer)
 			, white
 			, font_small
 		)
@@ -225,7 +243,7 @@ def drawStats(frame):
 
 		drawTextWithBorder(draw
 			, p2_data
-			, (base_width - w - spacer, spacer)
+			, (base_width - w - spacer, h + spacer * 2)
 			, white
 			, font_small
 		)
