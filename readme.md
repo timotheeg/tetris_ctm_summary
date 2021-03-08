@@ -19,6 +19,8 @@ Preferrably have the video segments you want to annotate with stats ready. Do no
 
 Instead, cut your video into segment by game to comment on, and then identify the location of the data areas for player 1 and 2 in `(x, y, width, height)` tuples, and populate them the script.
 
+## Tunables
+
 ```python
 p1_lines_xywh = (818, 58, 101, 31)
 p1_score_xywh = (572, 59, 206, 32)
@@ -34,10 +36,45 @@ This can be easily found in any graphic editor like gimp, like below:
 ![Find capture area](./finding_capture_area.jpg)
 
 
-Then run the script with
+There are additional tunables in the script:
+```python
+print_score_difference = True
+print_score_potential = False
+text_has_border = True
 ```
+
+Where
+* `print_score_difference`: shows the raw score difference between the players, this can be turned off in case stats get added to a CTWC-like match, where the layout already contains the score difference
+* `print_score_potential`: shows the expected maximum score the player can reach upon getting to kill screen (level 29). The pace difference is actually the difference between both player's score potential. Showing the score potential makes it more obvious.
+* `text_has_border` Determine whether text shouldbe drawn with thinn border
+
+Additionally, stats are printed in 2 blocks: the score block and the pace block. Each block's location can be tweaked for each player:
+```python
+p1_score_stats_xy = (525, 110)
+p1_pace_stats_xy = (525, 238)
+
+p2_score_stats_xy = (1405, 110)
+p2_pace_stats_xy = (1405, 238)
+```
+
+Do keep in mind, that the `(x, y)` location above represents the top-right corner for player 1 (because player 1's test is right aligned), and the top-left corner for player 2.
+
+## Running the script
+
+Run the script as:
+```bash
 python3 generate.py FILEPATH_TO_VIDEO_FILE
 ```
+
+This will generate a copy of the video file with extension `.out.mp4` with the stats injected.
+
+To verify the OCR is working correctly, the script can be run with `--verify` like this:
+```bash
+python3 generate.py FILEPATH_TO_VIDEO_FILE --verify
+```
+
+That will generate an output video file with extension `.verify.mp4` where the raw values read from the players feeds will be displayed, this will allow the script user to identify problems.
+
 
 # Sample output
 
@@ -54,6 +91,10 @@ The pace score is computed by projecting the player into the future, starting fr
 Some players can play several levels beyond the skill screen, but in the majority of cases, keeping kill screen as the baseline to compute a normalized pace score makes sense.
 
 The pace score is an interesting metric because a player may be ahead in point at a given point in time, but also vastly ahead in lines. That mans his opponent could be doing better overall, but playing a little more slowly. The pace score metrics, by projecting a perfect play onto both players is an indicator of the overall performance in the game so far.
+
+Here is another sample frame showing the verification data on top, the score potential, and the separation of the score and pace stat blocks
+
+![Sample frame](./sample_frame_verify.jpg)
 
 
 ## Aknowledgment
