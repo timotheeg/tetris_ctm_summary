@@ -33,23 +33,23 @@ class ScoreFixer(object):
 		if label[0] == "A":
 			if self.lastGoodLabel[0] == "3" or self.lastGoodLabel[0] == "4":
 				label = "4" + label[1:]
-				value += (4-10)*10**6
+				value += (4-10)*10**5
 
 		elif label[0] == "4":
 			if self.lastGoodLabel[0] == "9" or self.lastGoodLabel[0] == "A":
 				label = "A" + label[1:]
-				value += (10-4)*10**6
+				value += (10-4)*10**5
 
 
 		elif label[0] == "8":
 			if self.lastGoodLabel[0] == "A" or self.lastGoodLabel[0] == "B":
 				label = "B" + label[1:]
-				value += (11-8)*10**6
+				value += (11-8)*10**5
 
 		elif label[0] == "B":
 			if self.lastGoodLabel[0] == "7" or self.lastGoodLabel[0] == "8":
 				label = "8" + label[1:]
-				value += (8-11)*10**6
+				value += (8-11)*10**5
 
 
 		self.lastGoodLabel = label
