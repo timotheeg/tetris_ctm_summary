@@ -92,6 +92,9 @@ trt_box_value_xy = (21, 58)
 trt_box_template = './trt_box.png'
 trt_box_img = Image.open(trt_box_template)
 
+draw = ImageDraw.Draw(trt_box_img)
+draw.text(trt_box_header_xy, "TRT", (255,255,255), font=font_trt)
+
 
 def drawTextWithBorder(draw, text, loc, color, font):
 	x, y = loc
@@ -436,14 +439,12 @@ def drawStats(frame):
 	# Player 1 TRT Box
 	trt_box = trt_box_img.copy()
 	draw = ImageDraw.Draw(trt_box)
-	draw.text(trt_box_header_xy, "TRT", (255,255,255), font=font_trt)
 	draw.text(trt_box_value_xy, player1.getTRTLabel(), (255,255,255), font=font_trt)
 	frame.paste(trt_box, player1.trt_stats_xy, trt_box)
 
 	# Player 2 TRT Box
 	trt_box = trt_box_img.copy()
 	draw = ImageDraw.Draw(trt_box)
-	draw.text(trt_box_header_xy, "TRT", (255,255,255), font=font_trt)
 	draw.text(trt_box_value_xy, player2.getTRTLabel(), (255,255,255), font=font_trt)
 	frame.paste(trt_box, player2.trt_stats_xy, trt_box)
 
