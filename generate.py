@@ -28,6 +28,11 @@ source_file = args.source_video
 with open('config.json') as f:
 	conf = json.load(f)
 
+	# TODO: Make a Proper config class to handle the config file properly
+	# i.e. handle default, missing entries, unexpected values, etc.
+	if not 'show_trt' in conf:
+		conf['show_trt'] = False
+
 cap = cv2.VideoCapture(args.source_video)
 
 # More stuff we *could* put in config?
@@ -436,17 +441,18 @@ def drawStats(frame):
 	# =========================
 	# 3. Render the trt box
 
-	# Player 1 TRT Box
-	trt_box = trt_box_img.copy()
-	draw = ImageDraw.Draw(trt_box)
-	draw.text(trt_box_value_xy, player1.getTRTLabel(), (255,255,255), font=font_trt)
-	frame.paste(trt_box, player1.trt_stats_xy, trt_box)
+	if conf["show_trt"]:
+		# Player 1 TRT Box
+		trt_box = trt_box_img.copy()
+		draw = ImageDraw.Draw(trt_box)
+		draw.text(trt_box_value_xy, player1.getTRTLabel(), (255,255,255), font=font_trt)
+		frame.paste(trt_box, player1.trt_stats_xy, trt_box)
 
-	# Player 2 TRT Box
-	trt_box = trt_box_img.copy()
-	draw = ImageDraw.Draw(trt_box)
-	draw.text(trt_box_value_xy, player2.getTRTLabel(), (255,255,255), font=font_trt)
-	frame.paste(trt_box, player2.trt_stats_xy, trt_box)
+		# Player 2 TRT Box
+		trt_box = trt_box_img.copy()
+		draw = ImageDraw.Draw(trt_box)
+		draw.text(trt_box_value_xy, player2.getTRTLabel(), (255,255,255), font=font_trt)
+		frame.paste(trt_box, player2.trt_stats_xy, trt_box)
 
 
 def drawAreas(frame):
