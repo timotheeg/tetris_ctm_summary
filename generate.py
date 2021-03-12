@@ -433,14 +433,14 @@ def drawStats(frame):
 	# =========================
 	# 3. Render the trt box
 
-  # Player 1 TRT Box
+	# Player 1 TRT Box
 	trt_box = trt_box_img.copy()
 	draw = ImageDraw.Draw(trt_box)
 	draw.text(trt_box_header_xy, "TRT", (255,255,255), font=font_trt)
 	draw.text(trt_box_value_xy, player1.getTRTLabel(), (255,255,255), font=font_trt)
 	frame.paste(trt_box, player1.trt_stats_xy, trt_box)
 
-  # Player 2 TRT Box
+	# Player 2 TRT Box
 	trt_box = trt_box_img.copy()
 	draw = ImageDraw.Draw(trt_box)
 	draw.text(trt_box_header_xy, "TRT", (255,255,255), font=font_trt)

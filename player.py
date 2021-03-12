@@ -130,7 +130,7 @@ class Player:
 			else:
 				cleared = lines - (self.lines or 0)
 				if cleared == 4:
-					self.tetris_line_count =+ 4
+					self.tetris_line_count += 4
 
 			self.lines = lines
 			self.level = self.level_fixer.fix(level_label, level)[1]
