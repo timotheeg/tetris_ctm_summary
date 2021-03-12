@@ -46,7 +46,7 @@ player1 = Player(
 	conf["p1_level_xywh"],
 	conf["p1_score_stats_xy"],
 	conf["p1_pace_stats_xy"],
-  conf["p1_trt_stats_xy"]
+	conf["p1_trt_stats_xy"]
 )
 player2 = Player(
 	conf["p2_lines_xywh"],
@@ -54,7 +54,7 @@ player2 = Player(
 	conf["p2_level_xywh"],
 	conf["p2_score_stats_xy"],
 	conf["p2_pace_stats_xy"],
-  conf["p2_trt_stats_xy"]
+	conf["p2_trt_stats_xy"]
 )
 
 players = [player1, player2]
