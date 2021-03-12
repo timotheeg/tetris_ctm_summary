@@ -13,13 +13,14 @@ def tetris_value(level):
 	return 1200 * (level + 1)
 
 class Player:
-	def __init__(self, lines_loc_xywh, score_loc_xywh, level_loc_xywh, score_stats_xy, pace_stats_xy):
+	def __init__(self, lines_loc_xywh, score_loc_xywh, level_loc_xywh, score_stats_xy, pace_stats_xy, trt_stats_xy):
 		self.lines_loc = xywh_to_ltrb(lines_loc_xywh)
 		self.score_loc = xywh_to_ltrb(score_loc_xywh)
 		self.level_loc = xywh_to_ltrb(level_loc_xywh)
 
 		self.score_stats_xy = score_stats_xy
 		self.pace_stats_xy = pace_stats_xy
+		self.trt_stats_xy = trt_stats_xy
 
 		self.remaining_delay_frames = 0 # controls one frame delay to read line count
 
@@ -122,7 +123,7 @@ class Player:
 
 		if self.pending_lines:
 			changed = True
-			self.pending_lines = False;
+			self.pending_lines = False
 
 			if lines == None or lines == 0:
 				self.tetris_line_count = 0
@@ -131,7 +132,7 @@ class Player:
 				if cleared == 4:
 					self.tetris_line_count =+ 4
 
-			self.lines = lines;
+			self.lines = lines
 			self.level = self.level_fixer.fix(level_label, level)[1]
 			self.pace_score = self.getPaceMaxScore()
 
@@ -139,7 +140,7 @@ class Player:
 			self.pending_lines = True
 
 		if self.pending_score:
-			self.pending_score = False;
+			self.pending_score = False
 			new_score = self.score_fixer.fix(score_label, score)[1]
 			if new_score != self.score:
 				changed = True
@@ -185,7 +186,7 @@ class Player:
 
 
 	def getData(self, frame_idx):
-		return self.lines, self.score, self.level;
+		return self.lines, self.score, self.level
 
 	def getTRTLabel(self):
 		if self.lines == None:
