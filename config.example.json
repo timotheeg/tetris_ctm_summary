@@ -13,7 +13,9 @@
 
 	"p1_score_stats_xy": [525, 110],
 	"p1_pace_stats_xy": [525, 350],
+	"p1_trt_stats_xy": [0, 0],
 
 	"p2_score_stats_xy": [1405, 110],
-	"p2_pace_stats_xy": [1405, 350]
+	"p2_pace_stats_xy": [1405, 350],
+	"p2_trt_stats_xy": [1786, 0]
 }

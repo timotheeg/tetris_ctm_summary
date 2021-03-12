@@ -38,20 +38,23 @@ font_file = './prstartk_nes_tetris_8.ttf'
 font = ImageFont.truetype(font_file, 36)
 font_big = ImageFont.truetype(font_file, 64)
 font_small = ImageFont.truetype(font_file, 16)
+font_trt = ImageFont.truetype(font_file, 32)
 
 player1 = Player(
 	conf["p1_lines_xywh"],
 	conf["p1_score_xywh"],
 	conf["p1_level_xywh"],
 	conf["p1_score_stats_xy"],
-	conf["p1_pace_stats_xy"]
+	conf["p1_pace_stats_xy"],
+	conf["p1_trt_stats_xy"]
 )
 player2 = Player(
 	conf["p2_lines_xywh"],
 	conf["p2_score_xywh"],
 	conf["p2_level_xywh"],
 	conf["p2_score_stats_xy"],
-	conf["p2_pace_stats_xy"]
+	conf["p2_pace_stats_xy"],
+	conf["p2_trt_stats_xy"]
 )
 
 players = [player1, player2]
@@ -82,6 +85,12 @@ if not args.snap:
 	)
 
 composite_color = (255, 0, 255, 0)
+
+# TRT Box Variables
+trt_box_header_xy = (19, 24)
+trt_box_value_xy = (21, 58)
+trt_box_template = './trt_box.png'
+trt_box_img = Image.open(trt_box_template)
 
 
 def drawTextWithBorder(draw, text, loc, color, font):
@@ -421,6 +430,24 @@ def drawStats(frame):
 		, font
 	)
 
+	# =========================
+	# 3. Render the trt box
+
+	# Player 1 TRT Box
+	trt_box = trt_box_img.copy()
+	draw = ImageDraw.Draw(trt_box)
+	draw.text(trt_box_header_xy, "TRT", (255,255,255), font=font_trt)
+	draw.text(trt_box_value_xy, player1.getTRTLabel(), (255,255,255), font=font_trt)
+	frame.paste(trt_box, player1.trt_stats_xy, trt_box)
+
+	# Player 2 TRT Box
+	trt_box = trt_box_img.copy()
+	draw = ImageDraw.Draw(trt_box)
+	draw.text(trt_box_header_xy, "TRT", (255,255,255), font=font_trt)
+	draw.text(trt_box_value_xy, player2.getTRTLabel(), (255,255,255), font=font_trt)
+	frame.paste(trt_box, player2.trt_stats_xy, trt_box)
+
+
 def drawAreas(frame):
 	draw = ImageDraw.Draw(frame, "RGBA")
 	orange = (0xFF, 0x6C, 0x00, 100)
@@ -464,8 +491,8 @@ while True:
 	if (last_stats_frame is None) or changed:
 		print('\n')
 		print('Change detected')
-		print(player1.score, player1.lines, player1.level, player1.pace_score)
-		print(player2.score, player2.lines, player2.level, player2.pace_score)
+		print(player1.score, player1.lines, player1.level, player1.pace_score, player1.tetris_line_count)
+		print(player2.score, player2.lines, player2.level, player2.pace_score, player2.tetris_line_count)
 
 		last_stats_frame = Image.new('RGBA', (base_width, base_height), composite_color)
 		drawStats(last_stats_frame)
@@ -478,7 +505,7 @@ while True:
 		sys.exit(0)
 
 	frame = cv2.cvtColor(numpy.array(frame), cv2.COLOR_RGB2BGR)
-	out.write(frame);
+	out.write(frame)
 
 	print("Processed frame %d of %d (at %5.1f fps)" %
 		(
