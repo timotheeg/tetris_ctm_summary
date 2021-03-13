@@ -8,14 +8,11 @@ def invoke_exit() -> None:
     exit()
 
 
-options = {
-    0: invoke_exit,
-    1: sayHello
-}
+options = {0: invoke_exit, 1: sayHello}
 
 # Present an options menu to solicit the user's input
 while True:
-    prompt: str = f"""
+    prompt: str = """
 _____________________________________________
 
  --- Welcome to Yobi's CTM Summary Tool! ---
