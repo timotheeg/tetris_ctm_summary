@@ -44,7 +44,7 @@ def setup() -> Config:
         with open("config.json") as f:
             configDict: dict = json.load(f)
             config_from_file: Config = Config(**configDict)
-            print(">> config_from_file:", config_from_file)
+            print(">> SUCCESSFULLY read config_from_file:", config_from_file)
             return config_from_file
 
             # # TODO: Make a Proper config class to handle the config file properly
@@ -52,8 +52,8 @@ def setup() -> Config:
             # if "show_trt" not in conf:
             #     conf["show_trt"] = False
 
-    except FileNotFoundError:
-        print("ERROR 01!! No config found! Defaulting to hardcoded config values.")
+    except FileNotFoundError as err:
+        print("ERROR 01!! No config found! Defaulting to hardcoded config values.", err)
         return Config()
 
     except TypeError as err:
