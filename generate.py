@@ -231,6 +231,8 @@ def drawStats(frame):
 			, white
 			, font_small
 		)
+
+		# Draw P1 pace data
 		drawTextWithBorder(draw
 			, p1_data
 			, (spacer, h + spacer * 2)
@@ -239,9 +241,7 @@ def drawStats(frame):
 		)
 
 		p2_raw = ' '.join([str(v).upper() for v in player2.raw_data])
-
 		w, h = draw.textsize(p2_raw, font_small)
-
 		drawTextWithBorder(draw
 			, p2_raw
 			, (base_width - w - spacer, spacer)
@@ -249,8 +249,8 @@ def drawStats(frame):
 			, font_small
 		)
 
+		# Draw P2 pace data
 		w, h = draw.textsize(p2_data, font_small)
-
 		drawTextWithBorder(draw
 			, p2_data
 			, (base_width - w - spacer, h + spacer * 2)
@@ -497,9 +497,18 @@ while True:
 
 	if (last_stats_frame is None) or changed:
 		print('\n')
-		print('Change detected')
-		print(player1.score, player1.lines, player1.level, player1.pace_score, player1.tetris_line_count)
-		print(player2.score, player2.lines, player2.level, player2.pace_score, player2.tetris_line_count)
+		print('Change detected:')
+		p1_stat = (player1.score, player1.lines, player1.level, player1.pace_score, player1.tetris_line_count)
+		p2_stat = (player2.score, player2.lines, player2.level, player2.pace_score, player2.tetris_line_count)
+
+		if p1_changed:
+			p1_stat = str(p1_stat) + f" <- {cap.get(cv2.CAP_PROP_POS_MSEC):,.2f} ms"
+		if p2_changed:
+			p2_stat = str(p2_stat) + f" <- {cap.get(cv2.CAP_PROP_POS_MSEC):,.2f} ms"
+
+		print(p1_stat)
+		print(p2_stat)
+		# print(f"Current timestamp in video: {cap.get(cv2.CAP_PROP_POS_MSEC)}")
 
 		last_stats_frame = Image.new('RGBA', (base_width, base_height), composite_color)
 		drawStats(last_stats_frame)

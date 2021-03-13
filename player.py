@@ -12,6 +12,7 @@ DEATH_NULLS = 5
 def tetris_value(level):
 	return 1200 * (level + 1)
 
+
 class Player:
 	def __init__(self, lines_loc_xywh, score_loc_xywh, level_loc_xywh, score_stats_xy, pace_stats_xy, trt_stats_xy):
 		self.lines_loc = xywh_to_ltrb(lines_loc_xywh)
@@ -39,9 +40,10 @@ class Player:
 		self.tetris_line_count = 0
 		self.total_line_count = None
 
+
 	# coded for 18 start
 	@staticmethod
-	def getTetrisDiff(p1, p2, use_pace_score=False):
+	def getTetrisDiff(p1, p2, use_pace_score=False) -> int:
 		p1_score = p1.pace_score if use_pace_score else p1.score
 		p2_score = p2.pace_score if use_pace_score else p2.score
 
@@ -54,7 +56,7 @@ class Player:
 		else:
 			return 0
 
-		tetrises = 0
+		tetrises: int = 0
 		diff = abs(p1_score - p2_score)
 
 		while diff > 0:
@@ -72,6 +74,7 @@ class Player:
 		tetrises += diff / tetris_value(level)
 
 		return tetrises
+
 
 	def setFrame(self, frame):
 		lines_img = frame.crop(self.lines_loc)
