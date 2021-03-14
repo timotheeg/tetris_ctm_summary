@@ -1,4 +1,3 @@
-from io import TextIOWrapper
 import numpy
 import cv2
 
@@ -28,11 +27,11 @@ def initializePlayers(c: config.Config) -> list:
     return [player1, player2]
 
 
-def log(message: str, fileOutput: TextIOWrapper, file: bool, console: bool):
+def log(message: str, console: bool):
     if console:
         print(message)
-    if file:
-        fileOutput.write(f"{message}\n\n")
+    # if file:
+    #     fileOutput.write(f"{message}\n\n")
 
 
 # https://stackoverflow.com/questions/5531249/how-to-convert-time-format-into-milliseconds-and-back-in-python
@@ -56,7 +55,8 @@ def extractStats() -> None:
     frame_idx: int = -1
     start_time = time.time()
 
-    with open("./videos/statsOutput.txt", "w") as outFile:
+    extractedStats: list = []
+    try:
         while True:
             cv2_retval, cv2_image = cap.read()
 
@@ -85,12 +85,11 @@ def extractStats() -> None:
 
                 log(
                     "Change detected:                                  ",  # To clear buffer issues.
-                    outFile,
-                    file=False,
                     console=True,
                 )
-                log(f"{cur_ts}\n{p1_stat}\n{p2_stat}", outFile, file=True, console=True)
-                # print(f"Current timestamp in video: {cur_ts}")
+                log(f"{cur_ts}\n{p1_stat}\n{p2_stat}", console=True)
+                # extractedStats.append((cur_ts, p1_stat, p2_stat))
+                extractedStats.append(f"{cur_ts}\n{p1_stat}\n{p2_stat}")
 
             frame = cv2.cvtColor(numpy.array(frame), cv2.COLOR_RGB2BGR)
             status: str = "Processed frame %d of %d (at %5.1f fps)" % (
@@ -108,15 +107,21 @@ def extractStats() -> None:
                 #     total_frames,
                 #     (frame_idx + 1) / (time.time() - start_time),
                 # )
-                log(f"{status}\n", outFile, file=False, console=True)
+                log(f"{status}\n", console=True)
 
         log(
             "\nDone - processed %d frames in %d seconds"
             % (total_frames, int(time.time() - start_time)),
-            outFile,
-            file=True,
             console=True,
         )
+    except KeyboardInterrupt:
+        print("\n\nLoop exited before reading entire video!\n")
+
+    print("Now dumping all extracted Tetris metadata stored in memory to file...")
+    # result: map = map(lambda statsTuple: str(statsTuple), extractedStats)
+    lines: str = "\n\n".join(extractedStats)
+    with open("./videos/statsOutput2.txt", "w") as outFile:
+        outFile.writelines(lines)
 
 
 if __name__ == "__main__":
