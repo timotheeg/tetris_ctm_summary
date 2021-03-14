@@ -205,6 +205,12 @@ class Player:
     def getData(self, frame_idx):
         return self.lines, self.score, self.level
 
+    def getStatsData(self) -> str:
+        return (
+            f"{self.score}, {self.lines}, {self.level}, {self.pace_score}, "
+            + f"{self.tetris_line_count}"
+        )
+
     def getTRTLabel(self):
         if self.lines is None:
             label = ""

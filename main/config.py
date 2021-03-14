@@ -36,15 +36,16 @@ class Config:
 
 
 def setup() -> Config:
-    print("Setting up config!")
+    print(">> Setting up config!")
 
     try:
-        print("Trying reading from 'config.json'...\n")
+        print(">> Trying reading from 'config.json'...\n")
         # config must be present and valid, will throw if not
         with open("config.json") as f:
             configDict: dict = json.load(f)
             config_from_file: Config = Config(**configDict)
-            print(">> SUCCESSFULLY read config_from_file:", config_from_file)
+            print(">> SUCCESSFULLY read config_from_file!\n")
+            # print(config_from_file)
             return config_from_file
 
             # # TODO: Make a Proper config class to handle the config file properly

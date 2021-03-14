@@ -1,14 +1,17 @@
-from gen import sayHello, Test
-
-aaa: int = Test.sayTest()
+import videoProcessor.statsExtractor as se
 
 
 def invoke_exit() -> None:
-    print("Bye! Have a great day! 😀" + str(aaa))
+    print("Bye! Have a great day! 😀")
     exit()
 
 
-options = {0: invoke_exit, 1: sayHello}
+# fmt: off
+options = {
+    0: invoke_exit,
+    4: se.extractStats
+}
+# fmt: on
 
 # Present an options menu to solicit the user's input
 while True:
@@ -21,7 +24,7 @@ _____________________________________________
 1) Generate 'stats-injected' video
 2) Generate '*.verify.mp4' video
 3) Generate 'verify-snap' frame
-4) Generate all stats meta data as '*.txt' file
+4) Extract stats metadata from video (-> *.txt)
 
 0) Exit
 
