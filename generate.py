@@ -33,6 +33,12 @@ with open("config.json") as f:
     if "show_trt" not in conf:
         conf["show_trt"] = False
 
+    if "p1_trt_stats_xy" not in conf:
+        conf["p1_trt_stats_xy"] = [406, 0]
+
+    if "p2_trt_stats_xy" not in conf:
+        conf["p2_trt_stats_xy"] = [1392, 0]
+
 cap = cv2.VideoCapture(args.source_video)
 
 # More stuff we *could* put in config?
@@ -386,10 +392,7 @@ def drawAreas(frame):
     ]:
         x, y, w, h = conf[id]
         draw.rectangle(
-            [
-                (x, y),
-                (x + w, y + h),
-            ],
+            [(x, y), (x + w, y + h)],
             fill=orange,
         )
 
@@ -419,30 +422,10 @@ while True:
     if (last_stats_frame is None) or changed:
         print("\n")
         print("Change detected:")
-        p1_stat = (
-            player1.score,
-            player1.lines,
-            player1.level,
-            player1.pace_score,
-            player1.tetris_line_count,
-        )
-        p2_stat = (
-            player2.score,
-            player2.lines,
-            player2.level,
-            player2.pace_score,
-            player2.tetris_line_count,
-        )
-
-        cur_ts: str = f"{cap.get(cv2.CAP_PROP_POS_MSEC):,.2f} ms"
-        if p1_changed:
-            p1_stat = str(p1_stat) + f" <- {cur_ts}"
-        if p2_changed:
-            p2_stat = str(p2_stat) + f" <- {cur_ts}"
-
+        p1_stat: str = player1.getStatsData()
+        p2_stat: str = player2.getStatsData()
         print(p1_stat)
         print(p2_stat)
-        # print(f"Current timestamp in video: {cur_ts}")
 
         last_stats_frame = Image.new("RGBA", (base_width, base_height), composite_color)
         drawStats(last_stats_frame)

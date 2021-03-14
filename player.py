@@ -135,25 +135,50 @@ class Player:
 
             return True
 
+        # When digits change in an interlaced setup, the transition frame can be blurry and yield an incorrect read
+        # We introduce a 1-frame delay system for the value to stabilize before checking the value
+
+        # This means stats derived from the value will appear with one frame delay, which we consider acceptable for human viewing
+
+        # In some (rare) cases, the transition to the next value is still read as the old value, and thus not considered a change,
+        # Such cases introduce 2 problems:
+        # 1) by the time the change is detected, the 1-frame delay kicks in, and so the value would be changed with a cumulated 2 frames delay
+        # 2) if score is detected as change, but not lines, changes that should be synchronized (lines and score) would be detected as individual
+        # changes in 2 consecutive frames, causing stats to jump around.
+
+        # The double jump in stats is worse than the delay, so if a line change is detected while there was already a pendnig score read
+        # we assume the line is already ready to be read and we read it right away.
+
+        # That is done with that weird while loop, so we have 2 chances as evaluating self.pending_lines *cough*
+
         changed = False
 
-        if self.pending_lines:
-            changed = True
-            self.pending_lines = False
+        while True:
+            if self.pending_lines:
+                changed = True
+                self.pending_lines = False
 
-            if lines is None or lines == 0:
-                self.tetris_line_count = 0
-            else:
-                cleared = lines - (self.lines or 0)
-                if cleared == 4:
-                    self.tetris_line_count += 4
+                if lines is None or lines == 0:
+                    self.tetris_line_count = 0
+                else:
+                    cleared = lines - (self.lines or 0)
+                    if cleared == 4:
+                        self.tetris_line_count += 4
 
-            self.lines = lines
-            self.level = self.level_fixer.fix(level_label, level)[1]
-            self.pace_score = self.getPaceMaxScore()
+                self.lines = lines
+                self.level = self.level_fixer.fix(level_label, level)[1]
+                self.pace_score = self.getPaceMaxScore()
+                self.pending_score = True  # lines, have changed, force a score read
 
-        elif lines != self.lines:
-            self.pending_lines = True
+            elif lines != self.lines:
+                self.pending_lines = True
+                if self.pending_score:
+                    # because score was already pending, the line value is (probably) already
+                    # clean to read but we somehow didn't detect the change previously
+                    # let's read it right away after all!
+                    continue
+
+            break
 
         if self.pending_score:
             self.pending_score = False
@@ -184,10 +209,8 @@ class Player:
         level = self.level
         score = self.score
         lines = self.lines
-
         # Naive iterative computation... Maybe there's a formula to get it quick?
         # Oh well...
-
         # Basically, we assume scoring all tetrises till into kill screen
         while lines < 230:
             if lines >= 126:  # below 126 lines, level doesn't change every 10 lines
@@ -195,10 +218,8 @@ class Player:
                     lines % 10 >= 6
                 ):  # the tetris is counted at end level, not start level
                     level += 1
-
             lines += 4
             score += tetris_value(level)
-
         return score
         """
 

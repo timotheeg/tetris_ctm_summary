@@ -46,12 +46,8 @@ def setupColour(prefix, outputDict, digitList):
 
 
 def setupData():
-    setupColour(
-        "./sprite_templates/", data, digitsMap["A"]
-    )  # setup white
-    setupColour(
-        "./sprite_templates/red", redData, digitsMap["D"]
-    )  # setup red
+    setupColour("./sprite_templates/", data, digitsMap["A"])  # setup white
+    setupColour("./sprite_templates/red", redData, digitsMap["D"])  # setup red
 
 
 def getDigit(img, pattern, startX, startY, red):
@@ -129,7 +125,7 @@ def scoreImage(img, digitPattern, show=False, red=False):
         if result == "null":
             return None, None
         else:
-            value += int(result, 16) * (10**(count - i - 1))
+            value += int(result, 16) * (10 ** (count - i - 1))
             label += result
 
     return label, value
