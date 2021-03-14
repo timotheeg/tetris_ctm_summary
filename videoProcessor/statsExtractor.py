@@ -1,10 +1,13 @@
 import numpy
 import cv2
+import os
 
 import time
 from PIL import Image
 from player import Player
 import main.config as config
+import main.cli as cli
+import utils
 
 
 def initializePlayers(c: config.Config) -> list:
@@ -30,24 +33,18 @@ def initializePlayers(c: config.Config) -> list:
 def log(message: str, console: bool):
     if console:
         print(message)
-    # if file:
-    #     fileOutput.write(f"{message}\n\n")
-
-
-# https://stackoverflow.com/questions/5531249/how-to-convert-time-format-into-milliseconds-and-back-in-python
-def conv_ms_to_timestamp(ms: int) -> str:
-    hours, milliseconds = divmod(ms, 3600000)
-    minutes, milliseconds = divmod(ms, 60000)
-    seconds = float(milliseconds) / 1000
-    return "%02i:%02i:%06.3f" % (hours, minutes, seconds)
 
 
 def extractStats() -> None:
-    print("Time to extract some stats!")
-    c: config.Config = config.setup()
-    # print(">> FINAL Config:", c)
 
-    cap = cv2.VideoCapture(r"./videos/fullkoryanscotto1080p.mp4")
+    filename: str = cli.promptForVideo()
+    inputVideo: str = f"./input/{filename}"
+    outputSubtitle: str = f"./output/{filename[:-4]}.srt"
+
+    c: config.Config = config.setup()
+    # print(">> Debug Config:", c)
+
+    cap = cv2.VideoCapture(inputVideo)
     total_frames: int = cap.get(cv2.CAP_PROP_FRAME_COUNT)
 
     [player1, player2] = initializePlayers(c)
@@ -77,7 +74,7 @@ def extractStats() -> None:
                 p1_stat = player1.getStatsData()
                 p2_stat = player2.getStatsData()
 
-                cur_ts: str = conv_ms_to_timestamp(cap.get(cv2.CAP_PROP_POS_MSEC))
+                cur_ts: str = utils.conv_ms_to_timestamp(cap.get(cv2.CAP_PROP_POS_MSEC))
                 if p1_changed:
                     p1_stat = str(p1_stat) + f" <- {cur_ts}"
                 if p2_changed:
@@ -88,8 +85,7 @@ def extractStats() -> None:
                     console=True,
                 )
                 log(f"{cur_ts}\n{p1_stat}\n{p2_stat}", console=True)
-                # extractedStats.append((cur_ts, p1_stat, p2_stat))
-                extractedStats.append(f"{cur_ts}\n{p1_stat}\n{p2_stat}")
+                extractedStats.append((cur_ts, p1_stat, p2_stat))
 
             frame = cv2.cvtColor(numpy.array(frame), cv2.COLOR_RGB2BGR)
             status: str = "Processed frame %d of %d (at %5.1f fps)" % (
@@ -98,15 +94,8 @@ def extractStats() -> None:
                 (frame_idx + 1) / (time.time() - start_time),
             )
             print(status, end="\r")
-            # print(status)
-            # print("\033[A\033[A")
 
             if changed:
-                # status: str = "Processed frame %d of %d (at %5.1f fps)" % (
-                #     frame_idx + 1,
-                #     total_frames,
-                #     (frame_idx + 1) / (time.time() - start_time),
-                # )
                 log(f"{status}\n", console=True)
 
         log(
@@ -115,15 +104,35 @@ def extractStats() -> None:
             console=True,
         )
     except KeyboardInterrupt:
-        print("\n\nLoop exited before reading entire video!\n")
+        print("\n\n❌❌❌ Loop exited before reading entire video! ❌❌❌\n")
+    except TypeError as err:  # Squelch and bypass the weird cv2 'TypeError: src data type = 17 is not supported' error on early exit.
+        print(">> Type error occurred:", err)
 
-    print("Now dumping all extracted Tetris metadata stored in memory to file...")
-    # result: map = map(lambda statsTuple: str(statsTuple), extractedStats)
-    lines: str = "\n\n".join(extractedStats)
-    with open("./videos/statsOutput2.txt", "w") as outFile:
-        outFile.writelines(lines)
+    print(
+        "Now dumping all extracted Tetris metadata stored in memory to .srt file:\n\t",
+        outputSubtitle,
+    )
+
+    # Calculate total duration of video.
+    # https://stackoverflow.com/questions/49048111/how-to-get-the-duration-of-video-using-cv2
+    fps: int = cap.get(cv2.CAP_PROP_FPS)
+    durationInSeconds: float = float(total_frames) / float(fps)
+    endTimestamp: str = utils.conv_ms_to_timestamp(int(durationInSeconds * 1000))
+
+    # Add final timestamp to final tuple to extractedStats to handle LAST subtitle.
+    extractedStats.append((endTimestamp, None, None))
+
+    # Create output directories if neccessary.
+    os.makedirs(os.path.dirname(outputSubtitle), exist_ok=True)
+
+    with open(outputSubtitle, "w") as outFile:
+        for i in range(len(extractedStats) - 1):
+            outFile.write(f"{i + 1}\n")  # This is the subtitle id-- starts from 1
+            outFile.write(f"{extractedStats[i][0]} --> {extractedStats[i+1][0]}\n")
+            outFile.write(f"{extractedStats[i][1]}\n")
+            outFile.write(f"{extractedStats[i][2]}\n\n")
 
 
 if __name__ == "__main__":
-    print("\n### Config StatsExtractor in standlone mode!! ####\n")
+    print("\n### Running StatsExtractor in standlone mode!! ####\n")
     extractStats()

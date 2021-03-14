@@ -36,8 +36,6 @@ class Config:
 
 
 def setup() -> Config:
-    print(">> Setting up config!")
-
     try:
         print(">> Trying reading from 'config.json'...\n")
         # config must be present and valid, will throw if not
