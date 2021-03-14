@@ -33,6 +33,12 @@ with open("config.json") as f:
     if "show_trt" not in conf:
         conf["show_trt"] = False
 
+    if "p1_trt_stats_xy" not in conf:
+        conf["p1_trt_stats_xy"] = [406, 0]
+
+    if "p2_trt_stats_xy" not in conf:
+        conf["p2_trt_stats_xy"] = [1392, 0]
+
 cap = cv2.VideoCapture(args.source_video)
 
 # More stuff we *could* put in config?
