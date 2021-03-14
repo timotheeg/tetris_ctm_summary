@@ -386,11 +386,7 @@ def drawAreas(frame):
     ]:
         x, y, w, h = conf[id]
         draw.rectangle(
-            [
-                (x, y),
-                (x + w, y + h),
-            ],
-            fill=orange,
+            [(x, y), (x + w, y + h)], fill=orange,
         )
 
 
