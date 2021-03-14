@@ -32,7 +32,7 @@ def log(message: str, fileOutput: TextIOWrapper, file: bool, console: bool):
     if console:
         print(message)
     if file:
-        fileOutput.write(f"{message}\n")
+        fileOutput.write(f"{message}\n\n")
 
 
 # https://stackoverflow.com/questions/5531249/how-to-convert-time-format-into-milliseconds-and-back-in-python
@@ -40,7 +40,7 @@ def conv_ms_to_timestamp(ms: int) -> str:
     hours, milliseconds = divmod(ms, 3600000)
     minutes, milliseconds = divmod(ms, 60000)
     seconds = float(milliseconds) / 1000
-    return "%i:%02i:%06.3f" % (hours, minutes, seconds)
+    return "%02i:%02i:%06.3f" % (hours, minutes, seconds)
 
 
 def extractStats() -> None:
@@ -83,8 +83,13 @@ def extractStats() -> None:
                 if p2_changed:
                     p2_stat = str(p2_stat) + f" <- {cur_ts}"
 
-                log("Change detected:", outFile, file=False, console=True)
-                log(f"{p1_stat}\n{p2_stat}", outFile, file=True, console=True)
+                log(
+                    "Change detected:                                  ",  # To clear buffer issues.
+                    outFile,
+                    file=False,
+                    console=True,
+                )
+                log(f"{cur_ts}\n{p1_stat}\n{p2_stat}", outFile, file=True, console=True)
                 # print(f"Current timestamp in video: {cur_ts}")
 
             frame = cv2.cvtColor(numpy.array(frame), cv2.COLOR_RGB2BGR)
@@ -94,13 +99,16 @@ def extractStats() -> None:
                 (frame_idx + 1) / (time.time() - start_time),
             )
             print(status, end="\r")
+            # print(status)
+            # print("\033[A\033[A")
+
             if changed:
                 # status: str = "Processed frame %d of %d (at %5.1f fps)" % (
                 #     frame_idx + 1,
                 #     total_frames,
                 #     (frame_idx + 1) / (time.time() - start_time),
                 # )
-                log(status + "\n", outFile, file=False, console=True)
+                log(f"{status}\n", outFile, file=False, console=True)
 
         log(
             "\nDone - processed %d frames in %d seconds"
