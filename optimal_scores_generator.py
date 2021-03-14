@@ -3,11 +3,13 @@
 
 lineClears = [40, 100, 300, 1200]
 
+
 def clearScore(clear, lines):
     if clear + lines < 130:
         return 19 * lineClears[clear - 1]
     else:
         return int((clear + lines + 70) / 10) * lineClears[clear - 1]
+
 
 bestClears = ["" for i in range(234)]
 maxScore = [0 for i in range(230)]
@@ -23,12 +25,12 @@ for i in range(229, -1, -1):
         if i + j < 230:
             newScore += maxScore[i + j]
         if newScore > bestScore:
-            bestScore = newScore;
+            bestScore = newScore
             bestClear = j
     maxScore[i] = bestScore
     bestClears[i] = str(bestClear) + bestClears[i + bestClear]
 
     scoring_potential[i] = {
-        'score': maxScore[i],
-        'clears': bestClears[i],
+        "score": maxScore[i],
+        "clears": bestClears[i],
     }
