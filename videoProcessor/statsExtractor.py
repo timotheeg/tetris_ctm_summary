@@ -1,6 +1,7 @@
 import numpy
 import cv2
 import os
+from typing import NamedTuple
 
 import time
 from PIL import Image
@@ -8,6 +9,12 @@ from player import Player
 import main.config as config
 import main.cli as cli
 import utils
+
+
+class Stat(NamedTuple):
+    timestamp: str
+    p1_stat: str
+    p2_stat: str
 
 
 def initializePlayers(c: config.Config) -> list:
@@ -53,6 +60,7 @@ def extractStats() -> None:
     start_time = time.time()
 
     extractedStats: list = []
+
     try:
         while True:
             cv2_retval, cv2_image = cap.read()
@@ -85,7 +93,7 @@ def extractStats() -> None:
                     console=True,
                 )
                 log(f"{cur_ts}\n{p1_stat}\n{p2_stat}", console=True)
-                extractedStats.append((cur_ts, p1_stat, p2_stat))
+                extractedStats.append(Stat(cur_ts, p1_stat, p2_stat))
 
             frame = cv2.cvtColor(numpy.array(frame), cv2.COLOR_RGB2BGR)
             status: str = "Processed frame %d of %d (at %5.1f fps)" % (
@@ -103,10 +111,12 @@ def extractStats() -> None:
             % (total_frames, int(time.time() - start_time)),
             console=True,
         )
-    except KeyboardInterrupt:
-        print("\n\n❌❌❌ Loop exited before reading entire video! ❌❌❌\n")
+    except KeyboardInterrupt as err:
+        print(">> KeyboardInterrupt detected:                            ", err)
     except TypeError as err:  # Squelch and bypass the weird cv2 'TypeError: src data type = 17 is not supported' error on early exit.
         print(">> Type error occurred:", err)
+    finally:
+        print("\n\n❌❌❌ Loop exited before reading entire video! ❌❌❌\n")
 
     print(
         "Now dumping all extracted Tetris metadata stored in memory to .srt file:\n\t",
@@ -120,7 +130,7 @@ def extractStats() -> None:
     endTimestamp: str = utils.conv_ms_to_timestamp(int(durationInSeconds * 1000))
 
     # Add final timestamp to final tuple to extractedStats to handle LAST subtitle.
-    extractedStats.append((endTimestamp, None, None))
+    extractedStats.append(Stat(endTimestamp, None, None))
 
     # Create output directories if neccessary.
     os.makedirs(os.path.dirname(outputSubtitle), exist_ok=True)
@@ -128,9 +138,11 @@ def extractStats() -> None:
     with open(outputSubtitle, "w") as outFile:
         for i in range(len(extractedStats) - 1):
             outFile.write(f"{i + 1}\n")  # This is the subtitle id-- starts from 1
-            outFile.write(f"{extractedStats[i][0]} --> {extractedStats[i+1][0]}\n")
-            outFile.write(f"{extractedStats[i][1]}\n")
-            outFile.write(f"{extractedStats[i][2]}\n\n")
+            outFile.write(
+                f"{extractedStats[i].timestamp} --> {extractedStats[i+1].timestamp}\n"
+            )
+            outFile.write(f"{extractedStats[i].p1_stat}\n")
+            outFile.write(f"{extractedStats[i].p2_stat}\n\n")
 
 
 if __name__ == "__main__":
