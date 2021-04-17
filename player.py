@@ -3,15 +3,11 @@ from digitocr import scoreImage
 from score_fixer import ScoreFixer
 from level_fixer import LevelFixer
 
-from optimal_scores_generator import scoring_potential
+from optimal_scores_generator import getPotentialScore, getTetrisValue
 
 FRAMES_READ_DELAY = 1
 
 DEATH_NULLS = 5
-
-
-def tetris_value(level):
-    return 1200 * (level + 1)
 
 
 class Player:
@@ -23,6 +19,7 @@ class Player:
         score_stats_xy,
         pace_stats_xy,
         trt_stats_xy,
+        start_level=18,
     ):
         self.lines_loc = xywh_to_ltrb(lines_loc_xywh)
         self.score_loc = xywh_to_ltrb(score_loc_xywh)
@@ -31,6 +28,8 @@ class Player:
         self.score_stats_xy = score_stats_xy
         self.pace_stats_xy = pace_stats_xy
         self.trt_stats_xy = trt_stats_xy
+
+        self.start_level = start_level
 
         self.remaining_delay_frames = 0  # controls one frame delay to read line count
 
@@ -78,11 +77,11 @@ class Player:
             lines += 4
             tetrises += 1
 
-            diff -= tetris_value(level)
+            diff -= getTetrisValue(level)
 
         # correct the overshot
         # note: diff is negative, to this statement *reduces* the tetrises value
-        tetrises += diff / tetris_value(level)
+        tetrises += diff / getTetrisValue(level)
 
         return tetrises
 
@@ -194,13 +193,13 @@ class Player:
 
     def getPaceMaxScore(self):
         try:
-            return self.score + scoring_potential[self.lines]["score"]
+            return self.score + getPotentialScore(self.start_level, self.lines)
         except Exception:
             return self.score  # assume key error, lines > 230, extra potential is 0
 
         # Code below is a naive algorithm, that just scores tetrises all the way into
         # the kill screen.
-        # The table scoring_potential contains better strategies to squeeze single/double/triples
+        # The function getPotentialScore implements a better strategy to squeeze single/double/triples
         # to truly maximise the score
 
         # calculate maximum possible score from this point in the game
@@ -219,7 +218,7 @@ class Player:
                 ):  # the tetris is counted at end level, not start level
                     level += 1
             lines += 4
-            score += tetris_value(level)
+            score += getTetrisValue(level)
         return score
         """
 
