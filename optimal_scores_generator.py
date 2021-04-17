@@ -1,36 +1,80 @@
-# Script by fractal161
+# Script inspired and modified from script by fractal161
 # https://discord.com/channels/374368504465457153/788646151716339744/810970077015965757
 
-lineClears = [40, 100, 300, 1200]
+SCORE_BASES = [0, 40, 100, 300, 1200]
+
+TRANSITIONS = {
+    "0": 10,
+    "1": 20,
+    "2": 30,
+    "3": 40,
+    "4": 50,
+    "5": 60,
+    "6": 70,
+    "7": 80,
+    "8": 90,
+    "9": 100,
+    "10": 100,
+    "11": 100,
+    "12": 100,
+    "13": 100,
+    "14": 100,
+    "15": 100,
+    "16": 110,
+    "17": 120,
+    "18": 130,
+    "19": 130,
+}
 
 
-def clearScore(clear, lines):
-    if clear + lines < 130:
-        return 19 * lineClears[clear - 1]
-    else:
-        return int((clear + lines + 70) / 10) * lineClears[clear - 1]
+def getPacePotentialForLevel(start_level, transition_lines, kill_screen_lines):
+    print("getPacePotentialForLevel", start_level, transition_lines, kill_screen_lines)
+
+    def clearScore(current_lines, clear):
+        target_lines = current_lines + clear
+
+        if target_lines < transition_lines:
+            level = start_level
+        else:
+            level = start_level + 1 + int((target_lines - transition_lines) / 10)
+
+        return (level + 1) * SCORE_BASES[clear]
+
+    potential = {}
+    potential[kill_screen_lines + 0] = 0
+    potential[kill_screen_lines + 1] = 0
+    potential[kill_screen_lines + 2] = 0
+    potential[kill_screen_lines + 3] = 0
+
+    lines = kill_screen_lines
+
+    while lines:
+        lines -= 1
+
+        best_score = 0
+
+        for clear in (1, 2, 3, 4):
+            new_score = clearScore(lines, clear) + potential[clear + lines]
+
+            if new_score > best_score:
+                best_score = new_score
+
+        potential[lines] = best_score
+
+    return potential
 
 
-bestClears = ["" for i in range(234)]
-maxScore = [0 for i in range(230)]
+SCORING_POTENTIAL = {}
 
-scoring_potential = {}
+for start_level, transition_lines in TRANSITIONS.items():
+    start_level = int(start_level)
 
-for i in range(229, -1, -1):
-    # Figure out best score
-    bestScore = 0
-    bestClear = 1
-    for j in range(1, 5):
-        newScore = clearScore(j, i)
-        if i + j < 230:
-            newScore += maxScore[i + j]
-        if newScore > bestScore:
-            bestScore = newScore
-            bestClear = j
-    maxScore[i] = bestScore
-    bestClears[i] = str(bestClear) + bestClears[i + bestClear]
+    kill_screen_lines = 290 - (((start_level + 1) * 10) - transition_lines)
 
-    scoring_potential[i] = {
-        "score": maxScore[i],
-        "clears": bestClears[i],
-    }
+    SCORING_POTENTIAL[start_level] = getPacePotentialForLevel(
+        start_level, transition_lines, kill_screen_lines
+    )
+
+
+def getPotentialScore(start_level, lines):
+    return SCORING_POTENTIAL.get(start_level, {}).get(lines, 0)
