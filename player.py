@@ -90,23 +90,17 @@ class Player:
         return tetrises
 
     def setFrame(self, frame):
-        lines_img = frame.crop(self.lines_loc)
-        lines = scoreImage(lines_img, "TDD")[1]
-
         score_img = frame.crop(self.score_loc)
         score_label, score = scoreImage(score_img, "ADDDDD")
 
-        return self.setFrameData(lines, score, score_label)
-
-    def setFrameData(self, lines, score, score_label):  # lines, score, level
         # assign raw data not suitable for computation, but useful to debug
         # matches the order of the verify data
-        self.raw_data = (score, lines, score_label)
+        self.raw_data = (score_label, score, self.lines)
 
         # we always set values after 1 frame delay
         # That is to allow them to settle and fix incorrect reads
 
-        if lines is None or score is None:
+        if score is None:
             self.not_in_game_count += 1
 
             if self.not_in_game_count == DEATH_NULLS:
@@ -117,6 +111,10 @@ class Player:
             return False
 
         elif self.not_in_game_count:
+            lines_img = frame.crop(self.lines_loc)
+            lines = scoreImage(lines_img, "TDD")[1]
+            self.raw_data = (score_label, score, lines)
+
             self.not_in_game_count = 0
             self.pending_score = False
             self.lines = lines
@@ -142,6 +140,10 @@ class Player:
             if new_score != self.score:
                 changed = True
                 self.score = new_score
+
+                lines_img = frame.crop(self.lines_loc)
+                lines = scoreImage(lines_img, "TDD")[1]
+                self.raw_data = (score_label, score, lines)
 
                 # since score changed, assume lines is readable
                 if lines is None or lines == 0:
