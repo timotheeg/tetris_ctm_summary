@@ -1,12 +1,12 @@
 from utils import xywh_to_ltrb
 from digitocr import scoreImage
 from score_fixer import ScoreFixer
-from level_fixer import LevelFixer
 
 from score_utils import (
     getPotentialScore,
     getTetrisValue,
     getTransitionLines,
+    getLevel,
 )
 
 FRAMES_READ_DELAY = 1
@@ -19,7 +19,6 @@ class Player:
         self,
         lines_loc_xywh,
         score_loc_xywh,
-        level_loc_xywh,
         score_stats_xy,
         pace_stats_xy,
         trt_stats_xy,
@@ -27,7 +26,6 @@ class Player:
     ):
         self.lines_loc = xywh_to_ltrb(lines_loc_xywh)
         self.score_loc = xywh_to_ltrb(score_loc_xywh)
-        self.level_loc = xywh_to_ltrb(level_loc_xywh)
 
         self.score_stats_xy = score_stats_xy
         self.pace_stats_xy = pace_stats_xy
@@ -47,7 +45,6 @@ class Player:
         self.pending_score = True
 
         self.score_fixer = ScoreFixer()
-        self.level_fixer = LevelFixer()
 
         self.tetris_line_count = 0
         self.total_line_count = None
@@ -100,22 +97,17 @@ class Player:
         score_img = frame.crop(self.score_loc)
         score_label, score = scoreImage(score_img, "ADDDDD")
 
-        level_img = frame.crop(self.level_loc)
-        level_label, level = scoreImage(level_img, "TA")
+        return self.setFrameData(lines, score, score_label)
 
-        return self.setFrameData(lines, score, level, score_label, level_label)
-
-    def setFrameData(
-        self, lines, score, level, score_label, level_label
-    ):  # lines, score, level
+    def setFrameData(self, lines, score, score_label):  # lines, score, level
         # assign raw data not suitable for computation, but useful to debug
         # matches the order of the verify data
-        self.raw_data = (score, lines, level, score_label, level_label)
+        self.raw_data = (score, lines, score_label)
 
         # we always set values after 1 frame delay
         # That is to allow them to settle and fix incorrect reads
 
-        if lines is None or score is None or level is None:
+        if lines is None or score is None:
             self.not_in_game_count += 1
 
             if self.not_in_game_count == DEATH_NULLS:
@@ -130,15 +122,12 @@ class Player:
             self.pending_lines = False
             self.pending_score = False
             self.lines = lines
+            self.level = getLevel(self.start_level, lines)
             self.score = score
-            self.level = level
             self.pace_score = self.getPaceMaxScore()
 
             self.score_fixer.reset()
             self.score_fixer.fix(score_label, score)
-
-            self.level_fixer.reset()
-            self.level_fixer.fix(level_label, level)
 
             return True
 
@@ -173,7 +162,7 @@ class Player:
                         self.tetris_line_count += 4
 
                 self.lines = lines
-                self.level = self.level_fixer.fix(level_label, level)[1]
+                self.level = getLevel(self.start_level, lines)
                 self.pace_score = self.getPaceMaxScore()
                 self.pending_score = True  # lines, have changed, force a score read
 

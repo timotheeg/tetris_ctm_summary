@@ -27,16 +27,40 @@ TRANSITIONS = {
 }
 
 
+def getPotentialScore(start_level, lines):
+    return SCORING_POTENTIAL.get(start_level, {}).get(lines, 0)
+
+
+def getClearValue(level, clear):
+    return SCORE_BASES[clear] * (level + 1)
+
+
+def getTetrisValue(level):
+    return getClearValue(level, 4)
+
+
+def getTransitionLines(start_level):
+    return TRANSITIONS[str(start_level)]
+
+
+def getLevel(start_level, lines):
+    transition_lines = getTransitionLines(start_level)
+
+    if lines < transition_lines:
+        level = start_level
+    else:
+        level = start_level + 1 + int((lines - transition_lines) / 10)
+
+    return level
+
+
 def getPacePotentialForLevel(start_level, transition_lines, kill_screen_lines):
     def clearScore(current_lines, clear):
         target_lines = current_lines + clear
 
-        if target_lines < transition_lines:
-            level = start_level
-        else:
-            level = start_level + 1 + int((target_lines - transition_lines) / 10)
+        level = getLevel(start_level, target_lines)
 
-        return (level + 1) * SCORE_BASES[clear]
+        return getClearValue(level, clear)
 
     potential = {}
     potential[kill_screen_lines + 0] = 0
@@ -73,15 +97,3 @@ for start_level, transition_lines in TRANSITIONS.items():
     SCORING_POTENTIAL[start_level] = getPacePotentialForLevel(
         start_level, transition_lines, kill_screen_lines
     )
-
-
-def getPotentialScore(start_level, lines):
-    return SCORING_POTENTIAL.get(start_level, {}).get(lines, 0)
-
-
-def getTetrisValue(level):
-    return SCORE_BASES[4] * (level + 1)
-
-
-def getTransitionLines(start_level):
-    return TRANSITIONS[str(start_level)]

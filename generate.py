@@ -55,7 +55,6 @@ font_trt = ImageFont.truetype(font_file, 32)
 player1 = Player(
     conf["p1_lines_xywh"],
     conf["p1_score_xywh"],
-    conf["p1_level_xywh"],
     conf["p1_score_stats_xy"],
     conf["p1_pace_stats_xy"],
     conf["p1_trt_stats_xy"],
@@ -64,7 +63,6 @@ player1 = Player(
 player2 = Player(
     conf["p2_lines_xywh"],
     conf["p2_score_xywh"],
-    conf["p2_level_xywh"],
     conf["p2_score_stats_xy"],
     conf["p2_pace_stats_xy"],
     args.start_level,
@@ -380,10 +378,8 @@ def drawAreas(frame):
     for id in [
         "p1_lines_xywh",
         "p1_score_xywh",
-        "p1_level_xywh",
         "p2_lines_xywh",
         "p2_score_xywh",
-        "p2_level_xywh",
     ]:
         x, y, w, h = conf[id]
         draw.rectangle(
