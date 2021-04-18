@@ -41,7 +41,6 @@ class Player:
         self.pace_score = 0
 
         self.not_in_game_count = 1
-        self.pending_lines = True
         self.pending_score = True
 
         self.score_fixer = ScoreFixer()
@@ -119,7 +118,6 @@ class Player:
 
         elif self.not_in_game_count:
             self.not_in_game_count = 0
-            self.pending_lines = False
             self.pending_score = False
             self.lines = lines
             self.level = getLevel(self.start_level, lines)
@@ -136,24 +134,16 @@ class Player:
 
         # This means stats derived from the value will appear with one frame delay, which we consider acceptable for human viewing
 
-        # In some (rare) cases, the transition to the next value is still read as the old value, and thus not considered a change,
-        # Such cases introduce 2 problems:
-        # 1) by the time the change is detected, the 1-frame delay kicks in, and so the value would be changed with a cumulated 2 frames delay
-        # 2) if score is detected as change, but not lines, changes that should be synchronized (lines and score) would be detected as individual
-        # changes in 2 consecutive frames, causing stats to jump around.
-
-        # The double jump in stats is worse than the delay, so if a line change is detected while there was already a pendnig score read
-        # we assume the line is already ready to be read and we read it right away.
-
-        # That is done with that weird while loop, so we have 2 chances as evaluating self.pending_lines *cough*
-
         changed = False
 
-        while True:
-            if self.pending_lines:
+        if self.pending_score:
+            self.pending_score = False
+            new_score = self.score_fixer.fix(score_label, score)[1]
+            if new_score != self.score:
                 changed = True
-                self.pending_lines = False
+                self.score = new_score
 
+                # since score changed, assume lines is readable
                 if lines is None or lines == 0:
                     self.tetris_line_count = 0
                 else:
@@ -163,26 +153,9 @@ class Player:
 
                 self.lines = lines
                 self.level = getLevel(self.start_level, lines)
+
                 self.pace_score = self.getPaceMaxScore()
-                self.pending_score = True  # lines, have changed, force a score read
 
-            elif lines != self.lines:
-                self.pending_lines = True
-                if self.pending_score:
-                    # because score was already pending, the line value is (probably) already
-                    # clean to read but we somehow didn't detect the change previously
-                    # let's read it right away after all!
-                    continue
-
-            break
-
-        if self.pending_score:
-            self.pending_score = False
-            new_score = self.score_fixer.fix(score_label, score)[1]
-            if new_score != self.score:
-                changed = True
-                self.score = new_score
-                self.pace_score = self.getPaceMaxScore()
         elif score != self.score:
             self.pending_score = True
 
