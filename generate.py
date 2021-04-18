@@ -18,6 +18,7 @@ start_time = time.time()
 parser = argparse.ArgumentParser(description="Compute commpetition Tetris stats")
 parser.add_argument("--verify", action="store_true")
 parser.add_argument("--snap", type=int)
+parser.add_argument("--start_level", type=int, default=18)
 parser.add_argument("source_video")
 
 args = parser.parse_args()
@@ -58,6 +59,7 @@ player1 = Player(
     conf["p1_score_stats_xy"],
     conf["p1_pace_stats_xy"],
     conf["p1_trt_stats_xy"],
+    args.start_level,
 )
 player2 = Player(
     conf["p2_lines_xywh"],
@@ -65,7 +67,7 @@ player2 = Player(
     conf["p2_level_xywh"],
     conf["p2_score_stats_xy"],
     conf["p2_pace_stats_xy"],
-    conf["p2_trt_stats_xy"],
+    args.start_level,
 )
 
 players = [player1, player2]
