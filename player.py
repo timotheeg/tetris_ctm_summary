@@ -3,7 +3,11 @@ from digitocr import scoreImage
 from score_fixer import ScoreFixer
 from level_fixer import LevelFixer
 
-from optimal_scores_generator import getPotentialScore, getTetrisValue
+from optimal_scores_generator import (
+    getPotentialScore,
+    getTetrisValue,
+    getTransitionLines,
+)
 
 FRAMES_READ_DELAY = 1
 
@@ -51,24 +55,28 @@ class Player:
     # coded for 18 start
 
     @staticmethod
-    def getTetrisDiff(p1, p2, use_pace_score=False) -> int:
+    def getTetrisDiff(p1, p2, use_pace_score=False) -> float:
         p1_score = p1.pace_score if use_pace_score else p1.score
         p2_score = p2.pace_score if use_pace_score else p2.score
 
         if p1_score > p2_score:
             level = p2.level
             lines = p2.lines
+            transition_lines = getTransitionLines(p2.start_level)
         elif p2_score > p1_score:
             level = p1.level
             lines = p1.lines
+            transition_lines = getTransitionLines(p1.start_level)
         else:
             return 0
 
-        tetrises: int = 0
+        tetrises: float = 0
         diff = abs(p1_score - p2_score)
 
         while diff > 0:
-            if lines >= 126:  # below 126 lines, level doesn't change every 10 lines
+            if (
+                lines >= transition_lines - 4
+            ):  # below transition lines, level doesn't change every 10 lines
                 if (
                     lines % 10 >= 6
                 ):  # the tetris is counted at end level, not start level

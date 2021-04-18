@@ -81,3 +81,7 @@ def getPotentialScore(start_level, lines):
 
 def getTetrisValue(level):
     return SCORE_BASES[4] * (level + 1)
+
+
+def getTransitionLines(start_level):
+    return TRANSITIONS[str(start_level)]
