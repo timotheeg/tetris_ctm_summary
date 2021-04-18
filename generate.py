@@ -18,6 +18,7 @@ start_time = time.time()
 parser = argparse.ArgumentParser(description="Compute commpetition Tetris stats")
 parser.add_argument("--verify", action="store_true")
 parser.add_argument("--snap", type=int)
+parser.add_argument("--start_level", type=int, default=18)
 parser.add_argument("source_video")
 
 args = parser.parse_args()
@@ -54,18 +55,17 @@ font_trt = ImageFont.truetype(font_file, 32)
 player1 = Player(
     conf["p1_lines_xywh"],
     conf["p1_score_xywh"],
-    conf["p1_level_xywh"],
     conf["p1_score_stats_xy"],
     conf["p1_pace_stats_xy"],
     conf["p1_trt_stats_xy"],
+    args.start_level,
 )
 player2 = Player(
     conf["p2_lines_xywh"],
     conf["p2_score_xywh"],
-    conf["p2_level_xywh"],
     conf["p2_score_stats_xy"],
     conf["p2_pace_stats_xy"],
-    conf["p2_trt_stats_xy"],
+    args.start_level,
 )
 
 players = [player1, player2]
@@ -103,20 +103,19 @@ draw = ImageDraw.Draw(trt_box_img)
 draw.text(trt_box_header_xy, "TRT", (255, 255, 255), font=font_trt)
 
 
-def drawTextWithBorder(draw, text, loc, color, font):
+def drawTextWithBorder(draw, text, loc, color, font, border_width=4):
     x, y = loc
 
     border_col = (0, 0, 0, 255)
-    border_width = 4
 
     if conf["text_has_border"]:
-        # thin border - is this really needed??
+        # vertical and horizontal shifts
         draw.text((x - border_width, y), text, border_col, font=font)
         draw.text((x + border_width, y), text, border_col, font=font)
         draw.text((x, y - border_width), text, border_col, font=font)
         draw.text((x, y + border_width), text, border_col, font=font)
 
-        # thicker border
+        # diagonal shifts
         draw.text((x - border_width, y - border_width), text, border_col, font=font)
         draw.text((x + border_width, y - border_width), text, border_col, font=font)
         draw.text((x - border_width, y + border_width), text, border_col, font=font)
@@ -220,21 +219,28 @@ def drawStats(frame):
         )
 
         p1_raw: str = " ".join([str(v).upper() for v in player1.raw_data])
-        drawTextWithBorder(draw, p1_raw, (spacer, spacer), white, font_small)
+        drawTextWithBorder(draw, p1_raw, (spacer, spacer), white, font_small, 2)
 
         # Draw P1 pace data
-        drawTextWithBorder(draw, p1_data, (spacer, h + spacer * 2), white, font_small)
+        drawTextWithBorder(
+            draw, p1_data, (spacer, h + spacer * 2), white, font_small, 2
+        )
 
         p2_raw: str = " ".join([str(v).upper() for v in player2.raw_data])
         w, h = draw.textsize(p2_raw, font_small)
         drawTextWithBorder(
-            draw, p2_raw, (base_width - w - spacer, spacer), white, font_small
+            draw, p2_raw, (base_width - w - spacer, spacer), white, font_small, 2
         )
 
         # Draw P2 pace data
         w, h = draw.textsize(p2_data, font_small)
         drawTextWithBorder(
-            draw, p2_data, (base_width - w - spacer, h + spacer * 2), white, font_small
+            draw,
+            p2_data,
+            (base_width - w - spacer, h + spacer * 2),
+            white,
+            font_small,
+            2,
         )
 
     # =========================
@@ -385,10 +391,8 @@ def drawAreas(frame):
     for id in [
         "p1_lines_xywh",
         "p1_score_xywh",
-        "p1_level_xywh",
         "p2_lines_xywh",
         "p2_score_xywh",
-        "p2_level_xywh",
     ]:
         x, y, w, h = conf[id]
         draw.rectangle(
