@@ -112,13 +112,6 @@ def drawTextWithBorder(draw, text, loc, color, font):
     border_width = 4
 
     if conf["text_has_border"]:
-        # thin border - is this really needed??
-        draw.text((x - border_width, y), text, border_col, font=font)
-        draw.text((x + border_width, y), text, border_col, font=font)
-        draw.text((x, y - border_width), text, border_col, font=font)
-        draw.text((x, y + border_width), text, border_col, font=font)
-
-        # thicker border
         draw.text((x - border_width, y - border_width), text, border_col, font=font)
         draw.text((x + border_width, y - border_width), text, border_col, font=font)
         draw.text((x - border_width, y + border_width), text, border_col, font=font)
