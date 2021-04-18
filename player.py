@@ -3,7 +3,7 @@ from digitocr import scoreImage
 from score_fixer import ScoreFixer
 from level_fixer import LevelFixer
 
-from optimal_scores_generator import (
+from score_utils import (
     getPotentialScore,
     getTetrisValue,
     getTransitionLines,
