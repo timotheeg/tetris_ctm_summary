@@ -103,7 +103,7 @@ draw = ImageDraw.Draw(trt_box_img)
 draw.text(trt_box_header_xy, "TRT", (255, 255, 255), font=font_trt)
 
 
-def drawTextWithBorder(draw, text, loc, color, font, border_width = 4):
+def drawTextWithBorder(draw, text, loc, color, font, border_width=4):
     x, y = loc
 
     border_col = (0, 0, 0, 255)
@@ -222,7 +222,9 @@ def drawStats(frame):
         drawTextWithBorder(draw, p1_raw, (spacer, spacer), white, font_small, 2)
 
         # Draw P1 pace data
-        drawTextWithBorder(draw, p1_data, (spacer, h + spacer * 2), white, font_small, 2)
+        drawTextWithBorder(
+            draw, p1_data, (spacer, h + spacer * 2), white, font_small, 2
+        )
 
         p2_raw: str = " ".join([str(v).upper() for v in player2.raw_data])
         w, h = draw.textsize(p2_raw, font_small)
@@ -233,7 +235,12 @@ def drawStats(frame):
         # Draw P2 pace data
         w, h = draw.textsize(p2_data, font_small)
         drawTextWithBorder(
-            draw, p2_data, (base_width - w - spacer, h + spacer * 2), white, font_small, 2
+            draw,
+            p2_data,
+            (base_width - w - spacer, h + spacer * 2),
+            white,
+            font_small,
+            2,
         )
 
     # =========================
