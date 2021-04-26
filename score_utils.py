@@ -46,7 +46,7 @@ def getTransitionLines(start_level):
 def getLevel(start_level, lines):
     transition_lines = getTransitionLines(start_level)
 
-    if lines < transition_lines:
+    if not lines or lines < transition_lines:
         level = start_level
     else:
         level = start_level + 1 + int((lines - transition_lines) / 10)
