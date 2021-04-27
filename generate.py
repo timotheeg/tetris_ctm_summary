@@ -65,6 +65,7 @@ player2 = Player(
     conf["p2_score_xywh"],
     conf["p2_score_stats_xy"],
     conf["p2_pace_stats_xy"],
+    conf["p2_trt_stats_xy"],
     args.start_level,
 )
 
