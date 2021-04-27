@@ -133,7 +133,9 @@ def drawStats(frame):
 
     draw = ImageDraw.Draw(frame)
 
-    pace_tetris_diff: int = -1  # Add this to appease VSCode Linter. Weird bug? 3/12/21
+    pace_diff: int = -1
+    pace_tetris_diff: int = -1
+
     try:
         score_diff = abs(player1.score - player2.score)
         tetris_diff = Player.getTetrisDiff(player1, player2)
