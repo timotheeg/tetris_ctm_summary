@@ -69,6 +69,9 @@ class Player:
         tetrises: float = 0
         diff = abs(p1_score - p2_score)
 
+        if lines is None:
+            return 0
+
         while diff > 0:
             if (
                 lines >= transition_lines - 4
@@ -117,8 +120,8 @@ class Player:
 
             self.not_in_game_count = 0
             self.pending_score = False
-            self.lines = lines
-            self.level = getLevel(self.start_level, lines)
+            self.lines = lines or 0
+            self.level = getLevel(self.start_level, self.lines)
             self.score = score
             self.pace_score = self.getPaceMaxScore()
 
@@ -153,8 +156,8 @@ class Player:
                     if cleared == 4:
                         self.tetris_line_count += 4
 
-                self.lines = lines
-                self.level = getLevel(self.start_level, lines)
+                self.lines = lines or 0
+                self.level = getLevel(self.start_level, self.lines)
 
                 self.pace_score = self.getPaceMaxScore()
 

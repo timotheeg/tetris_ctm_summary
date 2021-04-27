@@ -206,17 +206,17 @@ def drawStats(frame):
         spacer = 5
         w, h = draw.textsize("0", font_small)
 
-        p1_data = "%d %d %d %d" % (
-            player1.score,
-            player1.lines,
-            player1.level,
-            player1.pace_score,
+        p1_data = "%s %s %s %s" % (
+            str(player1.score).upper(),
+            str(player1.lines).upper(),
+            str(player1.level).upper(),
+            str(player1.pace_score).upper(),
         )
-        p2_data = "%d %d %d %d" % (
-            player2.score,
-            player2.lines,
-            player2.level,
-            player2.pace_score,
+        p2_data = "%s %s %s %s" % (
+            str(player2.score).upper(),
+            str(player2.lines).upper(),
+            str(player2.level).upper(),
+            str(player2.pace_score).upper(),
         )
 
         p1_raw: str = " ".join([str(v).upper() for v in player1.raw_data])
