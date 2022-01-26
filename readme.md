@@ -74,7 +74,7 @@ There are additional tunables in the config file:
 Where
 * `print_score_difference`: shows the raw score difference between the players, this can be turned off in case stats get added to a CTWC-like match, where the layout already contains the score difference
 * `print_score_potential`: shows the expected maximum score the player can reach upon getting to kill screen (level 29). The pace difference is actually the difference between both player's score potential. Showing the score potential makes it more obvious.
-* `text_has_border` Determine whether text shouldbe drawn with thinn border
+* `text_has_border` Determine whether text should be drawn with thin border
 
 Finally, stats will be printed in 2 blocks: the score block and the pace block. Each block's location can be tweaked for each player:
 ```json
@@ -119,7 +119,7 @@ Where `10` indicates picking the 10th frame of the movie. This will generate a f
 ![Sample frame](./sample_frame.jpg)
 
 Data presented:
-* Score difference betweeen the 2 players, based on current scores
+* Score difference between the 2 players, based on current scores
 * Score difference in term of tetrises (taking level progression into account)
 * Pace score difference
 * Pace score difference in term of tetrises
@@ -140,7 +140,7 @@ And here is another sample with the `--snap 10` options:
 
 
 
-## Aknowledgment
+## Acknowledgment
 
 OCR-ing the score, lines, level count from the CTM footage is done using the file `digitocr.py` from the excellent [NESTrisOCR](https://github.com/alex-ong/NESTrisOCR) project by [Alex Ong](https://github.com/alex-ong).
 
